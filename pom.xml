@@ -74,6 +74,7 @@
         <log4j-over-slf4j.version>1.7.25</log4j-over-slf4j.version>
         <jcl-over-slf4j.version>1.7.25</jcl-over-slf4j.version>
         <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
+        <com.softwaremill.sttp.client3.version>3.3.7</com.softwaremill.sttp.client3.version>
 
         <io.prometheus.simpleclient.version>0.11.0</io.prometheus.simpleclient.version>
         <io.prometheus.simpleclient_hotspot.version>0.11.0</io.prometheus.simpleclient_hotspot.version>
@@ -381,6 +382,27 @@
             <groupId>com.github.everit-org.json-schema</groupId>
             <artifactId>org.everit.json.schema</artifactId>
             <version>1.12.3</version>
+        </dependency>
+
+        <!-- STTP -->
+        <!-- https://mvnrepository.com/artifact/com.softwaremill.sttp.client3/core -->
+        <dependency>
+            <groupId>com.softwaremill.sttp.client3</groupId>
+            <artifactId>core_${scala.major.version}</artifactId>
+            <version>${com.softwaremill.sttp.client3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.softwaremill.sttp.client3</groupId>
+            <artifactId>json4s_${scala.major.version}</artifactId>
+            <version>${com.softwaremill.sttp.client3.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.softwaremill.sttp.client3/async-http-client-backend-future -->
+        <dependency>
+            <groupId>com.softwaremill.sttp.client3</groupId>
+            <artifactId>async-http-client-backend-future_${scala.major.version}</artifactId>
+            <version>${com.softwaremill.sttp.client3.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-awt-util -->
