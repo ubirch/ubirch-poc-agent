@@ -30,7 +30,7 @@ object NOK {
   final val PARSING_ERROR = Symbol("ParsingError")
   final val NO_ROUTE_FOUND_ERROR = Symbol("NoRouteFound")
   final val DELETE_ERROR = Symbol("TokenDeleteError")
-  final val CERTIFY_ERROR = Symbol("CertifyError")
+  final val POC_AGENT_ERROR = Symbol("PoCAgentError")
   final val AUTHENTICATION_ERROR = Symbol("AuthenticationError")
 
   def apply(errorType: Symbol, errorMessage: String): NOK = new NOK(Response.version, ok = false, errorType, errorMessage)
@@ -38,7 +38,7 @@ object NOK {
   def serverError(errorMessage: String): NOK = NOK(SERVER_ERROR, errorMessage)
   def parsingError(errorMessage: String): NOK = NOK(PARSING_ERROR, errorMessage)
   def noRouteFound(errorMessage: String): NOK = NOK(NO_ROUTE_FOUND_ERROR, errorMessage)
-  def certifyError(errorMessage: String): NOK = NOK(CERTIFY_ERROR, errorMessage)
+  def pocAgentError(errorMessage: String): NOK = NOK(POC_AGENT_ERROR, errorMessage)
   def authenticationError(errorMessage: String): NOK = NOK(AUTHENTICATION_ERROR, errorMessage)
 
 }
