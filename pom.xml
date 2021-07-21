@@ -75,6 +75,12 @@
         <jcl-over-slf4j.version>1.7.25</jcl-over-slf4j.version>
         <logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
 
+        <io.prometheus.simpleclient.version>0.11.0</io.prometheus.simpleclient.version>
+        <io.prometheus.simpleclient_hotspot.version>0.11.0</io.prometheus.simpleclient_hotspot.version>
+        <io.prometheus.simpleclient_httpserver.version>0.11.0</io.prometheus.simpleclient_httpserver.version>
+        <io.prometheus.simpleclient_logback.version>0.11.0</io.prometheus.simpleclient_logback.version>
+        <io.prometheus.simpleclient_graphite_bridge.version>0.11.0</io.prometheus.simpleclient_graphite_bridge.version>
+
         <bcpkix-jdk15on.version>1.69</bcpkix-jdk15on.version>
         <bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 
@@ -176,6 +182,41 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
+
+        <!-- Prometheus -->
+
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>${io.prometheus.simpleclient.version}</version>
+        </dependency>
+        <!-- Hotspot JVM metrics-->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_hotspot</artifactId>
+            <version>${io.prometheus.simpleclient_hotspot.version}</version>
+        </dependency>
+        <!-- Exposition HTTPServer-->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_httpserver</artifactId>
+            <version>${io.prometheus.simpleclient_httpserver.version}</version>
+        </dependency>
+        <!-- SimpleClient_Logback -->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_logback</artifactId>
+            <version>${io.prometheus.simpleclient_logback.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_graphite_bridge -->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_graphite_bridge</artifactId>
+            <version>${io.prometheus.simpleclient_graphite_bridge.version}</version>
+        </dependency>
+
+        <!-- Prometheus -->
 
         <dependency>
             <groupId>org.json4s</groupId>
