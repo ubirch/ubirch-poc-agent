@@ -44,7 +44,7 @@ class InfoController @Inject() (config: Config, val swagger: Swagger, jFormats: 
   get("/") {
     asyncResult("root") { _ => _ =>
       Task {
-        Ok(Return("Hallo, Hola, こんにちは, Hello, Salut, Hej, this is the Ubirch Certify Service."))
+        Ok(Return("Hallo, Hola, こんにちは, Hello, Salut, Hej, this is the Ubirch Point of Certification agent."))
       }
     }
   }

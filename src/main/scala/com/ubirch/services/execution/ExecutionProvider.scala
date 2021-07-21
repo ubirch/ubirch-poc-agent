@@ -59,7 +59,7 @@ class SchedulerProvider @Inject() (ec: ExecutionContext) extends Provider[Schedu
 @Singleton
 class SchedulerIOProvider extends Provider[Scheduler] with SchedulerBase {
 
-  lazy val scheduler: Scheduler = monix.execution.Scheduler.io("certify-io")
+  lazy val scheduler: Scheduler = monix.execution.Scheduler.io("poc-agent-io")
 
   override def get(): Scheduler = scheduler
 
