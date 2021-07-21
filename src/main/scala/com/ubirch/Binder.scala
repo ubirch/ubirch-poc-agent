@@ -2,12 +2,12 @@ package com.ubirch
 
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.name.Names
-import com.google.inject.{AbstractModule, Module}
+import com.google.inject.{ AbstractModule, Module }
 import com.typesafe.config.Config
 import com.ubirch.services.config.ConfigProvider
-import com.ubirch.services.execution.{ExecutionProvider, FutureSttpBackend, SchedulerIOProvider, SchedulerProvider, SttpBackendProvider, SttpSSLBackend, SttpSSLBackendProvider}
+import com.ubirch.services.execution._
 import com.ubirch.services.formats.JsonFormatsProvider
-import com.ubirch.services.lifecycle.{DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle}
+import com.ubirch.services.lifecycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.rest.SwaggerProvider
 import monix.execution.Scheduler
 import org.json4s.Formats
@@ -18,8 +18,7 @@ import scala.concurrent.ExecutionContext
 /**
   * Represents the default binder for the system components
   */
-class Binder
-  extends AbstractModule {
+class Binder extends AbstractModule {
 
   def Config: ScopedBindingBuilder = bind(classOf[Config]).toProvider(classOf[ConfigProvider])
 
@@ -27,7 +26,8 @@ class Binder
 
   def Scheduler: ScopedBindingBuilder = bind(classOf[Scheduler]).toProvider(classOf[SchedulerProvider])
 
-  def SchedulerIO: ScopedBindingBuilder = bind(classOf[Scheduler]).annotatedWith(Names.named("io")).toProvider(classOf[SchedulerIOProvider])
+  def SchedulerIO: ScopedBindingBuilder =
+    bind(classOf[Scheduler]).annotatedWith(Names.named("io")).toProvider(classOf[SchedulerIOProvider])
 
   def Swagger: ScopedBindingBuilder = bind(classOf[Swagger]).toProvider(classOf[SwaggerProvider])
 
