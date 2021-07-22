@@ -1,13 +1,14 @@
 package com.ubirch.services.execution
 
 import java.io.FileInputStream
-import java.security.KeyStore
+import java.security.{ KeyStore, Security }
 
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.ConfPaths.HttpClientConfPaths
 import io.netty.handler.ssl.{ SslContext, SslContextBuilder }
 import org.asynchttpclient.DefaultAsyncHttpClientConfig
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import sttp.client3.SttpBackend
 import sttp.client3.asynchttpclient.future.AsyncHttpClientFutureBackend
 
@@ -22,15 +23,19 @@ trait SttpSSLBackendProvider {
 @Singleton
 class DefaultSttpSSLBackend @Inject() (config: Config) extends SttpSSLBackendProvider with LazyLogging {
 
+  val SECURITY_PROVIDER_NAME: String = BouncyCastleProvider.PROVIDER_NAME
+  Security.addProvider(new BouncyCastleProvider)
+
+  private final val keystoreType = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_TYPE)
   private final val keyStorePathAndName = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE)
   private final val keyStorePassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD)
-  private final val privateKeyPassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_PRIVATE_KEY_PASSWORD)
+  private final val keyPassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEY_PASSWORD)
 
-  private final val ks: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType)
+  private final val ks: KeyStore = KeyStore.getInstance(keystoreType, SECURITY_PROVIDER_NAME)
   ks.load(new FileInputStream(keyStorePathAndName), keyStorePassword.toCharArray)
 
   private final val kmf: KeyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm)
-  kmf.init(ks, privateKeyPassword.toCharArray)
+  kmf.init(ks, keyPassword.toCharArray)
 
   private final val sslContext: SslContext = SslContextBuilder.forClient().keyManager(kmf).build()
 
