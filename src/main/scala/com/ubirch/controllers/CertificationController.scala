@@ -2,6 +2,7 @@ package com.ubirch.controllers
 
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
+import com.ubirch.HttpResponseException
 import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
 import com.ubirch.models.NOK
 import com.ubirch.models.requests.CertificationRequest
@@ -13,7 +14,7 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra.swagger.{ ResponseMessage, Swagger, SwaggerSupportSyntax }
-import org.scalatra.{ NotFound, Ok }
+import org.scalatra.{ ActionResult, InternalServerError, NotFound, Ok }
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -65,17 +66,24 @@ class CertificationController @Inject() (
 
   post("/certification", operation(certification)) {
     asyncResult("certification") { implicit request => _ =>
-      for {
+      (for {
         maybeMediaType <- getContentType(request)
         mediaType <- earlyResponseIfEmpty(maybeMediaType)(new IllegalArgumentException(s"No ${HeaderKeys.CONTENT_TYPE} found"))
         certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
         response <- certificationService.performCertification(certificationRequest, mediaType)
-      } yield Ok(response)
+      } yield Ok(response)).onErrorRecover {
+        case e: HttpResponseException =>
+          logger.error(s"HttpResponseException ::  http_code=${e.statusCode} error=${e.body}")
+          ActionResult(e.statusCode, NOK.pocAgentError(e.body), Map.empty)
+        case e: Exception =>
+          logger.error(s"Exception :: exception=${e.getClass.getCanonicalName} message=${e.getMessage} -> ", e)
+          InternalServerError(NOK.pocAgentError("Sorry, something went wrong on our end"))
+      }
     }
   }
 
   before() {
-    contentType = "application/cbor"
+    contentType = "application/json"
   }
 
   notFound {
