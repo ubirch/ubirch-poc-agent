@@ -17,9 +17,10 @@ object ConfPaths {
   }
 
   trait HttpClientConfPaths {
+    final val HTTP_SSL_CONTEXT_KEYSTORE_TYPE = "system.http.client.sslKeyStoreType"
     final val HTTP_SSL_CONTEXT_KEYSTORE = "system.http.client.sslKeyStore"
     final val HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD = "system.http.client.sslKeyStorePassword"
-    final val HTTP_SSL_CONTEXT_PRIVATE_KEY_PASSWORD = "system.http.client.privateKeyPassword"
+    final val HTTP_SSL_CONTEXT_KEY_PASSWORD = "system.http.client.keyPassword"
   }
 
   trait ExecutionContextConfPaths {
