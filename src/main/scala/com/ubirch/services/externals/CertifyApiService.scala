@@ -1,4 +1,4 @@
-package com.ubirch.services.external
+package com.ubirch.services.externals
 
 import com.typesafe.config.Config
 import com.ubirch.models.requests.CertificationRequest
@@ -21,8 +21,7 @@ trait CertifyApiService {
   def registerSeal(certificationRequest: CertificationRequest, contentType: MediaType): Task[CertifyApiResponse]
 }
 
-class CertifyApiServiceImpl @Inject() (sttpSSLBackendProvider: SttpSSLBackendProvider, conf: Config)(implicit
-formats: Formats)
+class CertifyApiServiceImpl @Inject() (sttpSSLBackendProvider: SttpSSLBackendProvider, conf: Config)(implicit formats: Formats)
   extends CertifyApiService {
 
   private val endpoint = conf.getString(ConfPaths.CertifyPaths.ENDPOINT)
@@ -30,8 +29,9 @@ formats: Formats)
   implicit private val serialization: Serialization.type = org.json4s.native.Serialization
 
   override def registerSeal(
-    certificationRequest: CertificationRequest,
-    contentType: MediaType): Task[CertifyApiResponse] = {
+      certificationRequest: CertificationRequest,
+      contentType: MediaType
+  ): Task[CertifyApiResponse] = {
 
     val request = basicRequest
       .contentType(MediaType.ApplicationJson)
@@ -46,10 +46,10 @@ formats: Formats)
           .backend
           .send(request)
       ).flatMap(_.body match {
-        case Right(response) => Task(response)
-        case Left(error) =>
-          Task.raiseError(InternalException(s"Failed to send Certify API request due to: ${error.getMessage}"))
-      })
+          case Right(response) => Task(response)
+          case Left(error) =>
+            Task.raiseError(InternalException(s"Failed to send Certify API request due to: ${error.getMessage}"))
+        })
     }
 
     sendRequest()
