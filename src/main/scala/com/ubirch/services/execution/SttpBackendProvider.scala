@@ -17,10 +17,10 @@ class SttpSSLBackend extends SttpSSLBackendProvider {
   val config = new DefaultAsyncHttpClientConfig.Builder().build() // TODO: Add SSL here
 
   /**
-   * This is one single sttp backend with Future and SSL
-   *
-   * @Important: when you call a http request with Future, this backend object has to be used.
-   */
+    * This is one single sttp backend with Future and SSL
+    *
+    * @Important: when you call a http request with Future, this backend object has to be used.
+    */
   override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend.usingConfig(config)
 }
 
@@ -31,9 +31,9 @@ trait SttpBackendProvider {
 @Singleton
 class FutureSttpBackend extends SttpBackendProvider {
   /**
-   * This is one single sttp backend with Future
-   *
-   * @Important: when you call a http request with Future, this backend object has to be used.
-   */
+    * This is one single sttp backend with Future
+    *
+    * @Important: when you call a http request with Future, this backend object has to be used.
+    */
   override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend()
 }
