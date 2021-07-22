@@ -19,10 +19,10 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class CertificationController @Inject() (
-  config: Config,
-  val swagger: Swagger,
-  jFormats: Formats,
-  certificationService: CertificationService
+    config: Config,
+    val swagger: Swagger,
+    jFormats: Formats,
+    certificationService: CertificationService
 )(implicit val executor: ExecutionContext, scheduler: Scheduler)
   extends ControllerBase
   with TaskHelpers {
@@ -57,18 +57,17 @@ class CertificationController @Inject() (
           400,
           "Invalid Request"
         ),
-        ResponseMessage(
-          500,
-          "Internal Server Error"
-        )
+          ResponseMessage(
+            500,
+            "Internal Server Error"
+          )
       ))
 
   post("/certification", operation(certification)) {
     asyncResult("certification") { implicit request => _ =>
       for {
         maybeMediaType <- getContentType(request)
-        mediaType <-
-          earlyResponseIfEmpty(maybeMediaType)(new IllegalArgumentException(s"No ${HeaderKeys.CONTENT_TYPE} found"))
+        mediaType <- earlyResponseIfEmpty(maybeMediaType)(new IllegalArgumentException(s"No ${HeaderKeys.CONTENT_TYPE} found"))
         certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
         response <- certificationService.performCertification(certificationRequest, mediaType)
       } yield Ok(response)
