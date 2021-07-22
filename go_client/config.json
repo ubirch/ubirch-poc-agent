@@ -1,0 +1,8 @@
+{
+  "devices": {
+    "e1aead08-1fcb-47b3-bf2c-d3343cb979da": "ab561dfd-f414-484e-9ac1-42d018f73b3d"
+  },
+  "secret": "MTIzNDU2Nzg5MDEyMzQ1Ng==",
+  "env": "dev",
+  "debug": true
+}
