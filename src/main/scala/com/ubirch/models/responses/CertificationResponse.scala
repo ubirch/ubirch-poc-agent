@@ -9,4 +9,3 @@ case class CertificationResponse(
     requestId: String,
     error: Option[String]
 )
-case class Response(statusCode: Int, header: Map[String, String], content: String)

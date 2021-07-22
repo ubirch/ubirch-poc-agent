@@ -32,7 +32,19 @@ object ConfPaths {
     final val PORT = "system.metrics.prometheus.port"
   }
 
+  trait UppSigningPaths {
+    final val ENDPOINT = "system.upp.endpoint"
+    final val DEVICE_ID = "system.upp.signing.deviceId"
+    final val DEVICE_PWD = "system.upp.signing.devicePwd"
+  }
+
+  trait CertifyPaths {
+    final val ENDPOINT = "system.certify.endpoint"
+  }
+
   object GenericConfPaths extends GenericConfPaths
   object HttpServerConfPaths extends HttpServerConfPaths
   object HttpClientConfPaths extends HttpClientConfPaths
+  object UppSigningPaths extends UppSigningPaths
+  object CertifyPaths extends CertifyPaths
 }
