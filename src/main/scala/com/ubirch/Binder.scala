@@ -2,12 +2,14 @@ package com.ubirch
 
 import com.google.inject.binder.ScopedBindingBuilder
 import com.google.inject.name.Names
-import com.google.inject.{ AbstractModule, Module }
+import com.google.inject.{AbstractModule, Module}
 import com.typesafe.config.Config
+import com.ubirch.services.certification.{CertificationService, CertificationServiceImpl}
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution._
+import com.ubirch.services.external.{CertifyApiService, CertifyApiServiceImpl, GoClientService, GoClientServiceImpl}
 import com.ubirch.services.formats.JsonFormatsProvider
-import com.ubirch.services.lifecycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
+import com.ubirch.services.lifecycle.{DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle}
 import com.ubirch.services.rest.SwaggerProvider
 import monix.execution.Scheduler
 import org.json4s.Formats
@@ -41,6 +43,13 @@ class Binder extends AbstractModule {
 
   def BackendProvider: ScopedBindingBuilder = bind(classOf[SttpBackendProvider]).to(classOf[FutureSttpBackend])
 
+  def CertifyApiService: ScopedBindingBuilder = bind(classOf[CertifyApiService]).to(classOf[CertifyApiServiceImpl])
+
+  def GoClientService: ScopedBindingBuilder = bind(classOf[GoClientService]).to(classOf[GoClientServiceImpl])
+
+  def CertificationService: ScopedBindingBuilder =
+    bind(classOf[CertificationService]).to(classOf[CertificationServiceImpl])
+
   override def configure(): Unit = {
     Config
     ExecutionContext
@@ -52,6 +61,9 @@ class Binder extends AbstractModule {
     JVMHook
     SSLBackendProvider
     BackendProvider
+    CertifyApiService
+    GoClientService
+    CertificationService
     ()
   }
 

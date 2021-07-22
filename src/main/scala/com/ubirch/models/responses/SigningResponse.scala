@@ -4,6 +4,6 @@ case class SigningResponse(
   hash: String, //Base64 encoded
   upp: String, // Base64 encoded
   response: Response,
-  requestId: String,
+  requestId: Option[String],
   error: Option[String]
 )

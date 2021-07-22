@@ -5,7 +5,8 @@ import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
 import com.ubirch.models.NOK
 import com.ubirch.models.requests.CertificationRequest
-import com.ubirch.models.responses.{ CertificationResponse, Response }
+import com.ubirch.models.responses.CertificationResponse
+import com.ubirch.services.certification.CertificationService
 import com.ubirch.util.TaskHelpers
 import io.prometheus.client.Counter
 import monix.eval.Task
@@ -18,9 +19,10 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class CertificationController @Inject() (
-    config: Config,
-    val swagger: Swagger,
-    jFormats: Formats
+  config: Config,
+  val swagger: Swagger,
+  jFormats: Formats,
+  certificationService: CertificationService
 )(implicit val executor: ExecutionContext, scheduler: Scheduler)
   extends ControllerBase
   with TaskHelpers {
@@ -55,28 +57,21 @@ class CertificationController @Inject() (
           400,
           "Invalid Request"
         ),
-          ResponseMessage(
-            500,
-            "Internal Server Error"
-          )
+        ResponseMessage(
+          500,
+          "Internal Server Error"
+        )
       ))
 
   post("/certification", operation(certification)) {
     asyncResult("certification") { implicit request => _ =>
       for {
-        contentType <- getContentType(request)
-        _ <- earlyResponseIf(contentType.isEmpty)(new IllegalArgumentException(s"No ${HeaderKeys.CONTENT_TYPE} found"))
+        maybeMediaType <- getContentType(request)
+        mediaType <-
+          earlyResponseIfEmpty(maybeMediaType)(new IllegalArgumentException(s"No ${HeaderKeys.CONTENT_TYPE} found"))
         certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
-        _ = println(certificationRequest)
-      } yield Ok(CertificationResponse(
-        "hash",
-        "upp",
-        Some("dcc"),
-        None,
-        Response(200, Map.empty[String, String], "content"),
-        "requestId",
-        Some("error")
-      ))
+        response <- certificationService.performCertification(certificationRequest, mediaType)
+      } yield Ok(response)
     }
   }
 

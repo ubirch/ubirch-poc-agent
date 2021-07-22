@@ -11,7 +11,7 @@ import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import sttp.client3._
-import sttp.client3.json4s.asJson
+import sttp.client3.json4s.asJsonAlways
 import sttp.model.MediaType
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
       .contentType(MediaType.ApplicationJson)
       .body(compact(parse(write(request))))
       .post(uri"$endpoint/${deviceId}")
-      .response(asJson[SigningResponse])
+      .response(asJsonAlways[SigningResponse])
 
     def sendRequest(request: UPPSigningRequest) = {
       Task.fromFuture(

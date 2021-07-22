@@ -2,6 +2,7 @@ package com.ubirch
 
 import com.ubirch.controllers.concerns.HeaderKeys
 import monix.eval.Task
+import sttp.model.MediaType
 
 import javax.servlet.http.HttpServletRequest
 import scala.util.Try
@@ -21,17 +22,14 @@ package object controllers {
       }
   }
 
-  private val allowedCT = List(HeaderKeys.ContentTypeJSON).map(_.toLowerCase)
+  private val allowedMediaTypes = List(MediaType.ApplicationJson)
 
-  def getContentType(request: HttpServletRequest): Task[Option[String]] = {
+  def getContentType(request: HttpServletRequest): Task[Option[MediaType]] = {
     for {
-      //Should fail if nothing provided
       ct <- getHeader(request, HeaderKeys.CONTENT_TYPE)
+      mediaType <- Task.fromEither(error => InternalException(error))(MediaType.parse(ct))
     } yield {
-      ct.split(";")
-        .map(_.trim)
-        .headOption
-        .filter(x => allowedCT.contains(x.toLowerCase))
+      allowedMediaTypes.find(_ == mediaType)
     }
   }
 

@@ -28,4 +28,6 @@ trait TaskHelpers {
   def earlyResponseIf(condition: Boolean)(response: Exception): Task[Unit] =
     if (condition) Task.raiseError(response) else Task.unit
 
+  def earlyResponseIfEmpty[A](value: Option[A])(response: Exception): Task[A] =
+    value.fold[Task[A]](Task.raiseError(response))(a => Task(a))
 }
