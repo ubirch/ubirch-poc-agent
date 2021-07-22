@@ -20,7 +20,7 @@ trait SttpSSLBackendProvider {
 }
 
 @Singleton
-class SttpSSLBackend @Inject() (config: Config) extends SttpSSLBackendProvider with LazyLogging {
+class DefaultSttpSSLBackend @Inject() (config: Config) extends SttpSSLBackendProvider with LazyLogging {
 
   private final val keyStorePathAndName = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE)
   private final val keyStorePassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD)
@@ -52,7 +52,7 @@ trait SttpBackendProvider {
 }
 
 @Singleton
-class FutureSttpBackend extends SttpBackendProvider with LazyLogging {
+class DefaultFutureSttpBackend extends SttpBackendProvider with LazyLogging {
   /**
     * This is one single sttp backend with Future
     *
