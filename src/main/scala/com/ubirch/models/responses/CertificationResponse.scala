@@ -6,6 +6,6 @@ case class CertificationResponse(
     dcc: Option[String],
     pdf: Option[String],
     response: Response,
-    requestId: String,
+    requestId: Option[String],
     error: Option[String]
 )
