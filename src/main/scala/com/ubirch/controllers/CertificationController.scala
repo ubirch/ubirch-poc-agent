@@ -18,9 +18,9 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class CertificationController @Inject() (
-  config: Config,
-  val swagger: Swagger,
-  jFormats: Formats
+    config: Config,
+    val swagger: Swagger,
+    jFormats: Formats
 )(implicit val executor: ExecutionContext, scheduler: Scheduler)
   extends ControllerBase
   with TaskHelpers {
@@ -55,10 +55,10 @@ class CertificationController @Inject() (
           400,
           "Invalid Request"
         ),
-        ResponseMessage(
-          500,
-          "Internal Server Error"
-        )
+          ResponseMessage(
+            500,
+            "Internal Server Error"
+          )
       ))
 
   post("/certification", operation(certification)) {
@@ -75,7 +75,8 @@ class CertificationController @Inject() (
         None,
         Response(200, Map.empty[String, String], "content"),
         "requestId",
-        Some("error")))
+        Some("error")
+      ))
     }
   }
 
@@ -89,7 +90,8 @@ class CertificationController @Inject() (
         logger.info(
           "controller=CertificationController route_not_found={} query_string={}",
           requestPath,
-          Option(request).map(_.getQueryString).getOrElse(""))
+          Option(request).map(_.getQueryString).getOrElse("")
+        )
         NotFound(NOK.noRouteFound(requestPath + " might exist in another universe"))
       }
     }
