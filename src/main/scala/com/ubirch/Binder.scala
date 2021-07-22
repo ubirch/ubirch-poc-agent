@@ -37,9 +37,9 @@ class Binder extends AbstractModule {
 
   def JVMHook: ScopedBindingBuilder = bind(classOf[JVMHook]).to(classOf[DefaultJVMHook])
 
-  def SSLBackendProvider: ScopedBindingBuilder = bind(classOf[SttpSSLBackendProvider]).to(classOf[SttpSSLBackend])
+  def SSLBackendProvider: ScopedBindingBuilder = bind(classOf[SttpSSLBackendProvider]).to(classOf[DefaultSttpSSLBackend])
 
-  def BackendProvider: ScopedBindingBuilder = bind(classOf[SttpBackendProvider]).to(classOf[FutureSttpBackend])
+  def BackendProvider: ScopedBindingBuilder = bind(classOf[SttpBackendProvider]).to(classOf[DefaultFutureSttpBackend])
 
   override def configure(): Unit = {
     Config
