@@ -1,4 +1,4 @@
-package com.ubirch.services.external
+package com.ubirch.services.externals
 
 import com.typesafe.config.Config
 import com.ubirch.models.requests.{ CertificationRequest, UPPSigningRequest }
@@ -43,7 +43,8 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
       Task.fromFuture(
         sttpBackendProvider
           .backend
-          .send(buildRequest(request)))
+          .send(buildRequest(request))
+      )
         .flatMap(_.body match {
           case Right(response) => Task(response)
           case Left(error) =>
@@ -61,7 +62,8 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
     requests match {
       case request :: Nil => Task(request)
       case otherwise => Task.raiseError(
-          InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}"))
+        InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}")
+      )
     }
   }
 
