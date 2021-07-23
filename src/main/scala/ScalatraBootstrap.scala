@@ -2,8 +2,8 @@ import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.ConfPaths.HttpServerConfPaths
 import com.ubirch.Service
-import com.ubirch.controllers.{ CertificationController, InfoController, ResourcesController }
 import com.ubirch.controllers.concerns.CorsConfig
+import com.ubirch.controllers.{ CertificationController, InfoController, ResourcesController }
 import org.scalatra.LifeCycle
 
 import javax.servlet.ServletContext

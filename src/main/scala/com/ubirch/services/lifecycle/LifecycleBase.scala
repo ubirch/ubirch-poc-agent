@@ -1,8 +1,9 @@
 package com.ubirch.services.lifecycle
 
+import java.util.concurrent.{ ConcurrentLinkedDeque, CountDownLatch, TimeUnit }
+
 import com.typesafe.scalalogging.LazyLogging
 
-import java.util.concurrent.{ ConcurrentLinkedDeque, CountDownLatch, TimeUnit }
 import javax.inject._
 import scala.annotation.tailrec
 import scala.concurrent.{ ExecutionContext, Future }

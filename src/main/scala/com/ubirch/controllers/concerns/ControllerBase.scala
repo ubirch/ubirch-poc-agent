@@ -1,5 +1,9 @@
 package com.ubirch.controllers.concerns
 
+import java.io.{ ByteArrayInputStream, FileOutputStream }
+import java.nio.charset.StandardCharsets
+import java.util.Date
+
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.models.NOK
 import monix.eval.Task
@@ -9,10 +13,6 @@ import org.json4s.JsonAST.JValue
 import org.scalatra._
 import org.scalatra.json.NativeJsonSupport
 import org.scalatra.swagger.SwaggerSupport
-
-import java.io.{ ByteArrayInputStream, FileOutputStream }
-import java.nio.charset.StandardCharsets
-import java.util.Date
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletRequestWrapper, HttpServletResponse, HttpServletResponseWrapper }
 import javax.servlet.{ ReadListener, ServletInputStream }

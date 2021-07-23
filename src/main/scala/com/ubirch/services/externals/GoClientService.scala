@@ -1,5 +1,7 @@
 package com.ubirch.services.externals
 
+import java.util.UUID
+
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import com.typesafe.config.Config
@@ -17,16 +19,15 @@ import sttp.client3._
 import sttp.client3.json4s._
 import sttp.model.MediaType
 
-import java.util.UUID
-
 trait GoClientService {
   def sign(certificationRequest: CertificationRequest, deviceId: UUID, devicePwd: String): Task[SigningResponse]
 }
 
 class GoClientServiceImpl @Inject() (
-  sttpBackendProvider: SttpBackendProvider,
-  conf: Config,
-  @Named("io") scheduler: Scheduler)(implicit formats: Formats)
+    sttpBackendProvider: SttpBackendProvider,
+    conf: Config,
+    @Named("io") scheduler: Scheduler
+)(implicit formats: Formats)
   extends GoClientService {
 
   private val endpoint = conf.getString(ConfPaths.UppSigningPaths.ENDPOINT)
@@ -34,9 +35,9 @@ class GoClientServiceImpl @Inject() (
   implicit private val serialization: Serialization.type = org.json4s.native.Serialization
 
   override def sign(
-    certificationRequest: CertificationRequest,
-    deviceId: UUID,
-    devicePwd: String
+      certificationRequest: CertificationRequest,
+      deviceId: UUID,
+      devicePwd: String
   ): Task[SigningResponse] = {
     val uppSigningRequests = UPPSigningRequest.fromCertificationRequest(certificationRequest)
 
@@ -79,8 +80,8 @@ class GoClientServiceImpl @Inject() (
     requests match {
       case request :: Nil => Task(request)
       case otherwise => Task.raiseError(
-          InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}")
-        )
+        InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}")
+      )
     }
   }
 

@@ -2,7 +2,8 @@ package com.ubirch.controllers
 
 import com.ubirch.controllers.concerns.RequestEnricher
 import org.scalatra.ScalatraServlet
-import org.scalatra.swagger.{ ApiInfo, ContactInfo, LicenseInfo, NativeSwaggerBase, Swagger }
+import org.scalatra.swagger._
+
 import javax.inject._
 
 /**

@@ -1,11 +1,11 @@
 package com.ubirch.services.execution
 
-import com.typesafe.config.Config
-import com.ubirch.ConfPaths.ExecutionContextConfPaths
-import monix.execution.Scheduler
 import java.util.concurrent.Executors
 
+import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
+import com.ubirch.ConfPaths.ExecutionContextConfPaths
+import monix.execution.Scheduler
 
 import javax.inject._
 import scala.concurrent.{ ExecutionContext, ExecutionContextExecutor }

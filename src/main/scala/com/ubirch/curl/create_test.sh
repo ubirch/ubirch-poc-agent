@@ -3,7 +3,11 @@
 host="http://localhost:8081"
 accept="application/cbor"
 
-curl -v --location --request POST ${host}/poc-agent/v1/certification \
+deviceId="8e6a5679-5b0c-4a1e-9aa5-4f6e42fff5b3"
+devicePwd="changeme"
+
+curl -v --location --request POST ${host}/$deviceId \
+--header "X-Auth-Token: $devicePwd" \
 --header "Accept: $accept" \
 --header 'Content-Type: application/json' \
  --data-binary @- <<EOF | jq .

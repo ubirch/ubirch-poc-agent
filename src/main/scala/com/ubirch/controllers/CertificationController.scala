@@ -1,5 +1,7 @@
 package com.ubirch.controllers
 
+import java.util.UUID
+
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.HttpResponseException
@@ -13,10 +15,9 @@ import io.prometheus.client.Counter
 import monix.eval.Task
 import monix.execution.Scheduler
 import org.json4s.Formats
-import org.scalatra.swagger.{ ResponseMessage, Swagger, SwaggerSupportSyntax }
 import org.scalatra._
+import org.scalatra.swagger.{ ResponseMessage, Swagger, SwaggerSupportSyntax }
 
-import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.util.{ Failure, Success, Try }

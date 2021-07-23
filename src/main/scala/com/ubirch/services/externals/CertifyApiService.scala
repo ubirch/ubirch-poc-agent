@@ -22,16 +22,17 @@ trait CertifyApiService {
 }
 
 class CertifyApiServiceImpl @Inject() (
-  sttpSSLBackendProvider: SttpSSLBackendProvider,
-  conf: Config,
-  @Named("io") scheduler: Scheduler)(implicit formats: Formats)
+    sttpSSLBackendProvider: SttpSSLBackendProvider,
+    conf: Config,
+    @Named("io") scheduler: Scheduler
+)(implicit formats: Formats)
   extends CertifyApiService {
 
   private val endpoint = conf.getString(ConfPaths.CertifyPaths.ENDPOINT)
 
   override def registerSeal(
-    certificationRequest: CertificationRequest,
-    contentType: MediaType
+      certificationRequest: CertificationRequest,
+      contentType: MediaType
   ): Task[CertifyApiResponse] = {
 
     val request = basicRequest
@@ -47,17 +48,18 @@ class CertifyApiServiceImpl @Inject() (
           .backend
           .send(request)
       ).executeOn(scheduler).flatMap(r =>
-        r.body match {
-          case Right(response) =>
-            Task(CertifyApiResponse(response))
-          case Left(error) =>
-            Task.raiseError(HttpResponseException(
-              Symbol("Certify API"),
-              "Error processing Certify API request",
-              r.code.code,
-              r.headers.map(x => (x.name, x.value)).toMap,
-              error))
-        })
+          r.body match {
+            case Right(response) =>
+              Task(CertifyApiResponse(response))
+            case Left(error) =>
+              Task.raiseError(HttpResponseException(
+                Symbol("Certify API"),
+                "Error processing Certify API request",
+                r.code.code,
+                r.headers.map(x => (x.name, x.value)).toMap,
+                error
+              ))
+          })
     }
 
     sendRequest()
