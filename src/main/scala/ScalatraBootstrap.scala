@@ -24,7 +24,7 @@ class ScalatraBootstrap extends LifeCycle with LazyLogging {
   lazy val certificationController: CertificationController = Service.get[CertificationController]
 
   override def init(context: ServletContext): Unit = {
-    logger.info(
+    logger.debug(
       s"swagger_on_path=$swaggerOnPath allowed_cors_headers=($allowedCorsHeaders) allowed_methods=(${CorsConfig.DefaultMethods})"
     )
 
@@ -40,11 +40,13 @@ class ScalatraBootstrap extends LifeCycle with LazyLogging {
       name = "Info"
     )
 
-    context.mount(
-      handler = resourceController,
-      urlPattern = "/api-docs",
-      name = "Resources"
-    )
+    if (swaggerOnPath) {
+      context.mount(
+        handler = resourceController,
+        urlPattern = "/api-docs",
+        name = "Resources"
+      )
+    }
 
     context.mount(
       handler = certificationController,

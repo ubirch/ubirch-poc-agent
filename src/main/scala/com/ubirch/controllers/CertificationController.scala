@@ -67,6 +67,10 @@ class CertificationController @Inject() (
           )
       ))
 
+  get("/") {
+    redirect("/info")
+  }
+
   post("/:deviceId", operation(certification)) {
     asyncResult("certification") { implicit request => _ =>
       (for {

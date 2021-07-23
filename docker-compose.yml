@@ -11,7 +11,7 @@ services:
       - UBIRCH_ENV=dev
 
   poc_agent:
-    image: ubirch/ubirch-poc-agent:202107231830-dev
+    image: ubirch/ubirch-poc-agent:202107232005-dev
     container_name: poc_agent
     volumes:
       - '.donotcommit/test_client_cert:/data'
@@ -26,6 +26,7 @@ services:
       - POC_AGENT_SVC_HTTP_CLIENT_SSL_KEYSTORE=/data/key_store.p12
       - POC_AGENT_SVC_UPP_ENDPOINT=http://go_client:8080
       - POC_AGENT_SVC_CERTIFY_ENDPOINT=https://api.certify.dev.ubirch.com
+      - POC_AGENT_SVC_HTTP_SWAGGER_ACTIVATED=true
     env_file: ./docker-compose-envs/poca.env
     networks:
       - poc_agent_network
