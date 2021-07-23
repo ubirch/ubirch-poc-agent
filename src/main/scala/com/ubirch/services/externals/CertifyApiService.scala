@@ -4,10 +4,10 @@ import com.typesafe.config.Config
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.CertifyApiResponse
 import com.ubirch.services.execution.SttpSSLBackendProvider
-import com.ubirch.{ConfPaths, HttpResponseException}
+import com.ubirch.{ ConfPaths, HttpResponseException }
 import monix.eval.Task
 import org.json4s.Formats
-import org.json4s.jackson.JsonMethods.{compact, parse}
+import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization.write
 import sttp.client3._
 import sttp.model.HeaderNames.Accept
@@ -44,7 +44,7 @@ class CertifyApiServiceImpl @Inject() (sttpSSLBackendProvider: SttpSSLBackendPro
           case Right(response) =>
             Task(CertifyApiResponse(response))
           case Left(error) =>
-            Task.raiseError(HttpResponseException(Symbol("Certify API"), r.code.code, r.headers.map(x => (x.name, x.value)).toMap, error))
+            Task.raiseError(HttpResponseException(Symbol("Certify API"), "Error processing Certify API request", r.code.code, r.headers.map(x => (x.name, x.value)).toMap, error))
         })
     }
 

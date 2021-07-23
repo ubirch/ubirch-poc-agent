@@ -6,7 +6,7 @@ import com.ubirch.HttpResponseException
 import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
 import com.ubirch.models.NOK
 import com.ubirch.models.requests.CertificationRequest
-import com.ubirch.models.responses.CertificationResponse
+import com.ubirch.models.responses.{ CertificationResponse, SigningResponse }
 import com.ubirch.services.certification.CertificationService
 import com.ubirch.util.TaskHelpers
 import io.prometheus.client.Counter
@@ -15,8 +15,8 @@ import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra.swagger.{ ResponseMessage, Swagger, SwaggerSupportSyntax }
 import org.scalatra.{ ActionResult, InternalServerError, NotFound, Ok }
-
 import javax.inject.Inject
+
 import scala.concurrent.ExecutionContext
 
 class CertificationController @Inject() (
@@ -72,9 +72,13 @@ class CertificationController @Inject() (
         certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
         response <- certificationService.performCertification(certificationRequest, mediaType)
       } yield Ok(response)).onErrorRecover {
-        case e: HttpResponseException =>
-          logger.error(s"HttpResponseException ::  http_code=${e.statusCode} error=${e.body}")
-          ActionResult(e.statusCode, NOK.pocAgentError(e.body), Map.empty)
+        case e: HttpResponseException[_] =>
+          logger.error(s"HttpResponseException ::  http_code=${e.statusCode} error=${e.message}")
+          //TODO: Unify responses
+          e.body match {
+            case body: String => ActionResult(e.statusCode, NOK.pocAgentError(body), Map.empty)
+            case body: SigningResponse => ActionResult(e.statusCode, body, Map.empty)
+          }
         case e: Exception =>
           logger.error(s"Exception :: exception=${e.getClass.getCanonicalName} message=${e.getMessage} -> ", e)
           InternalServerError(NOK.pocAgentError("Sorry, something went wrong on our end"))

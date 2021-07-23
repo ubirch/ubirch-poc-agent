@@ -4,16 +4,15 @@ import com.typesafe.config.Config
 import com.ubirch.models.requests.{ CertificationRequest, UPPSigningRequest }
 import com.ubirch.models.responses.SigningResponse
 import com.ubirch.services.execution.SttpBackendProvider
-import com.ubirch.{ ConfPaths, InternalException }
+import com.ubirch.{ ConfPaths, HttpResponseException, InternalException }
 import monix.eval.Task
 import org.json4s.Formats
 import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import sttp.client3._
-import sttp.client3.json4s.asJsonAlways
+import sttp.client3.json4s._
 import sttp.model.MediaType
-
 import javax.inject.Inject
 
 trait GoClientService {
@@ -37,7 +36,7 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
       .contentType(MediaType.ApplicationJson)
       .body(compact(parse(write(request))))
       .post(uri"$endpoint/${deviceId}")
-      .response(asJsonAlways[SigningResponse])
+      .response(asJsonEither[SigningResponse, SigningResponse])
 
     def sendRequest(request: UPPSigningRequest) = {
       Task.fromFuture(
@@ -45,8 +44,10 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
           .backend
           .send(buildRequest(request))
       )
-        .flatMap(_.body match {
+        .flatMap(r => r.body match {
           case Right(response) => Task(response)
+          case Left(error: HttpError[SigningResponse]) =>
+            Task.raiseError(HttpResponseException(Symbol("UPP Signer"), "Error processing Certify API request", r.code.code, r.headers.map(x => (x.name, x.value)).toMap, error.body))
           case Left(error) =>
             Task.raiseError(InternalException(s"Failed to send UPP signing request because: ${error.getMessage}"))
         })
