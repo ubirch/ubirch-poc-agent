@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  go_client:
+    image: ubirch/ubirch-client:v1.2.2
+    container_name: ubirch_client
+    volumes:
+      - './go_client:/data'
+    networks:
+      - poc_agent_network
+
+  poc_agent:
+    image: ubirch/ubirch-poc-agent:latest
+    container_name: poc_agent
+    ports:
+      - 8081:8081
+    depends_on:
+      - go_client
+    environment:
+      - POC_AGENT_SVC_HTTP_SERVER_PORT=8081
+      - POC_AGENT_SVC_HTTP_CLIENT_SSL_KEYSTORE_TYPE=pkcs12
+      - POC_AGENT_SVC_HTTP_CLIENT_SSL_KEYSTORE=/path_to_key_store/dev_client_key_store.jks
+      - POC_AGENT_SVC_HTTP_CLIENT_SSL_KEYSTORE_PASSWORD=changeme
+      - POC_AGENT_SVC_UPP_ENDPOINT=http://go_client:8080
+      - POC_AGENT_SVC_UPP_SIGNING_DEVICE_ID=e1aead08-1fcb-47b3-bf2c-d3343cb979da
+      - POC_AGENT_SVC_UPP_SIGNING_DEVICE_PWD=ab561dfd-f414-484e-9ac1-42d018f73b3d
+      - POC_AGENT_SVC_CERTIFY_ENDPOINT=https://api.certify.dev.ubirch.com
+    networks:
+      - poc_agent_network
+
+networks:
+  poc_agent_network:
