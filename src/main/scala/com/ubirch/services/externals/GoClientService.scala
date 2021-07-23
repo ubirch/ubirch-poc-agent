@@ -1,11 +1,14 @@
 package com.ubirch.services.externals
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import com.typesafe.config.Config
 import com.ubirch.models.requests.{ CertificationRequest, UPPSigningRequest }
 import com.ubirch.models.responses.SigningResponse
 import com.ubirch.services.execution.SttpBackendProvider
 import com.ubirch.{ ConfPaths, HttpResponseException, InternalException }
 import monix.eval.Task
+import monix.execution.Scheduler
 import org.json4s.Formats
 import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization
@@ -15,13 +18,15 @@ import sttp.client3.json4s._
 import sttp.model.MediaType
 
 import java.util.UUID
-import javax.inject.Inject
 
 trait GoClientService {
   def sign(certificationRequest: CertificationRequest, deviceId: UUID, devicePwd: String): Task[SigningResponse]
 }
 
-class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, conf: Config)(implicit formats: Formats)
+class GoClientServiceImpl @Inject() (
+  sttpBackendProvider: SttpBackendProvider,
+  conf: Config,
+  @Named("io") scheduler: Scheduler)(implicit formats: Formats)
   extends GoClientService {
 
   private val endpoint = conf.getString(ConfPaths.UppSigningPaths.ENDPOINT)
@@ -29,9 +34,9 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
   implicit private val serialization: Serialization.type = org.json4s.native.Serialization
 
   override def sign(
-      certificationRequest: CertificationRequest,
-      deviceId: UUID,
-      devicePwd: String
+    certificationRequest: CertificationRequest,
+    deviceId: UUID,
+    devicePwd: String
   ): Task[SigningResponse] = {
     val uppSigningRequests = UPPSigningRequest.fromCertificationRequest(certificationRequest)
 
@@ -47,7 +52,7 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
         sttpBackendProvider
           .backend
           .send(buildRequest(request))
-      )
+      ).executeOn(scheduler)
         .flatMap(r =>
           r.body match {
             case Right(response) => Task(response)
@@ -74,8 +79,8 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
     requests match {
       case request :: Nil => Task(request)
       case otherwise => Task.raiseError(
-        InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}")
-      )
+          InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}")
+        )
     }
   }
 
