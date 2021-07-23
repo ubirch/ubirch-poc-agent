@@ -1,31 +1,37 @@
 package com.ubirch.services.externals
 
+import com.google.inject.name.Named
 import com.typesafe.config.Config
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.CertifyApiResponse
 import com.ubirch.services.execution.SttpSSLBackendProvider
 import com.ubirch.{ ConfPaths, HttpResponseException }
 import monix.eval.Task
+import monix.execution.Scheduler
 import org.json4s.Formats
 import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization.write
 import sttp.client3._
 import sttp.model.HeaderNames.Accept
 import sttp.model.MediaType
+
 import javax.inject.Inject
 
 trait CertifyApiService {
   def registerSeal(certificationRequest: CertificationRequest, contentType: MediaType): Task[CertifyApiResponse]
 }
 
-class CertifyApiServiceImpl @Inject() (sttpSSLBackendProvider: SttpSSLBackendProvider, conf: Config)(implicit formats: Formats)
+class CertifyApiServiceImpl @Inject() (
+  sttpSSLBackendProvider: SttpSSLBackendProvider,
+  conf: Config,
+  @Named("io") scheduler: Scheduler)(implicit formats: Formats)
   extends CertifyApiService {
 
   private val endpoint = conf.getString(ConfPaths.CertifyPaths.ENDPOINT)
 
   override def registerSeal(
-      certificationRequest: CertificationRequest,
-      contentType: MediaType
+    certificationRequest: CertificationRequest,
+    contentType: MediaType
   ): Task[CertifyApiResponse] = {
 
     val request = basicRequest
@@ -40,11 +46,17 @@ class CertifyApiServiceImpl @Inject() (sttpSSLBackendProvider: SttpSSLBackendPro
         sttpSSLBackendProvider
           .backend
           .send(request)
-      ).flatMap(r => r.body match {
+      ).executeOn(scheduler).flatMap(r =>
+        r.body match {
           case Right(response) =>
             Task(CertifyApiResponse(response))
           case Left(error) =>
-            Task.raiseError(HttpResponseException(Symbol("Certify API"), "Error processing Certify API request", r.code.code, r.headers.map(x => (x.name, x.value)).toMap, error))
+            Task.raiseError(HttpResponseException(
+              Symbol("Certify API"),
+              "Error processing Certify API request",
+              r.code.code,
+              r.headers.map(x => (x.name, x.value)).toMap,
+              error))
         })
     }
 
