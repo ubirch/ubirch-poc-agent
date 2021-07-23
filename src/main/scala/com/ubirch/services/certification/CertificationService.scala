@@ -2,6 +2,7 @@ package com.ubirch.services.certification
 
 import java.util.{ Base64, UUID }
 
+import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.models.Accepts
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.CertificationResponse
@@ -20,7 +21,7 @@ trait CertificationService {
 }
 
 class CertificationServiceImpl @Inject() (goClientService: GoClientService, certifyApiService: CertifyApiService)
-  extends CertificationService {
+  extends CertificationService with LazyLogging {
   override def performCertification(
       certificationRequest: CertificationRequest,
       mediaType: MediaType,
@@ -38,7 +39,7 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
         Option(new String(certifyResponse.body))
       } else None
 
-      CertificationResponse(
+      val res = CertificationResponse(
         hash = signingResponse.hash,
         upp = signingResponse.upp,
         dcc = dcc,
@@ -47,6 +48,11 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
         requestId = signingResponse.requestId,
         error = signingResponse.error
       )
+
+      logger.info(s"upp_dcc_certification=${res.hash} request_id=${res.requestId.getOrElse("-")}")
+
+      res
+
     }
   }
 

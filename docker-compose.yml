@@ -7,11 +7,9 @@ services:
       - './go_client:/data'
     networks:
       - poc_agent_network
-    environment:
-      - UBIRCH_ENV=dev
 
   poc_agent:
-    image: ubirch/ubirch-poc-agent:202107232005-dev
+    image: ubirch/ubirch-poc-agent:202107232311-dev
     container_name: poc_agent
     volumes:
       - '.donotcommit/test_client_cert:/data'

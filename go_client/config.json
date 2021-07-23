@@ -4,5 +4,5 @@
   },
   "secret": "MTIzNDU2Nzg5MDEyMzQ1Ng==",
   "env": "dev",
-  "debug": true
+  "debug": false
 }
