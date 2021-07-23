@@ -27,13 +27,13 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
       certifyResponse <- certifyApiService.registerSeal(certificationRequest, mediaType)
       signingResponse <- goClientService.sign(certificationRequest)
     } yield CertificationResponse(
-      signingResponse.hash,
-      signingResponse.upp,
-      if (isMediaTypePdf(mediaType)) Some(Base45.getEncoder.encodeToString(certifyResponse.body)) else None,
-      if (!isMediaTypePdf(mediaType)) Some(Base64.getEncoder.encodeToString(certifyResponse.body)) else None,
-      signingResponse.response,
-      signingResponse.requestId,
-      signingResponse.error
+      hash = signingResponse.hash,
+      upp = signingResponse.upp,
+      dcc = if (!isMediaTypePdf(mediaType)) Some(Base45.getEncoder.encodeToString(certifyResponse.body)) else None,
+      pdf = if (isMediaTypePdf(mediaType)) Some(Base64.getEncoder.encodeToString(certifyResponse.body)) else None,
+      response = signingResponse.response,
+      requestId = signingResponse.requestId,
+      error = signingResponse.error
     )
   }
 

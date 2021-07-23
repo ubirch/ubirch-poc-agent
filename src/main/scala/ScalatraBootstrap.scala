@@ -48,7 +48,7 @@ class ScalatraBootstrap extends LifeCycle with LazyLogging {
 
     context.mount(
       handler = certificationController,
-      urlPattern = "/poc-agent",
+      urlPattern = "/poc-agent/v1",
       name = "Certification"
     )
   }

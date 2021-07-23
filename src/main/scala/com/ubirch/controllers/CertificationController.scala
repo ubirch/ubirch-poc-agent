@@ -2,10 +2,11 @@ package com.ubirch.controllers
 
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
-import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
+import com.ubirch.HttpResponseException
+import com.ubirch.controllers.concerns.ControllerBase
 import com.ubirch.models.NOK
 import com.ubirch.models.requests.CertificationRequest
-import com.ubirch.models.responses.CertificationResponse
+import com.ubirch.models.responses.{ CertificationResponse, SigningResponse }
 import com.ubirch.services.certification.CertificationService
 import com.ubirch.util.TaskHelpers
 import io.prometheus.client.Counter
@@ -13,7 +14,7 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import org.json4s.Formats
 import org.scalatra.swagger.{ ResponseMessage, Swagger, SwaggerSupportSyntax }
-import org.scalatra.{ NotFound, Ok }
+import org.scalatra._
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -65,17 +66,31 @@ class CertificationController @Inject() (
 
   post("/certification", operation(certification)) {
     asyncResult("certification") { implicit request => _ =>
-      for {
-        maybeMediaType <- getContentType(request)
-        mediaType <- earlyResponseIfEmpty(maybeMediaType)(new IllegalArgumentException(s"No ${HeaderKeys.CONTENT_TYPE} found"))
+      (for {
+        maybeAcceptHeader <- getAccept(request)
+        _ = if (maybeAcceptHeader.isEmpty) logger.debug("No accept header found, assuming application/cbor")
         certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
-        response <- certificationService.performCertification(certificationRequest, mediaType)
-      } yield Ok(response)
+        response <- certificationService.performCertification(certificationRequest, maybeAcceptHeader.getOrElse(ContentTypeCbor))
+      } yield Ok(response)).onErrorRecover {
+        case e: HttpResponseException[_] =>
+          logger.error(s"HttpResponseException ::  http_code=${e.statusCode} error=${e.message}")
+          //TODO: Unify responses
+          e.body match {
+            case body: String => ActionResult(e.statusCode, NOK.pocAgentError(body), Map.empty)
+            case body: SigningResponse => ActionResult(e.statusCode, body, Map.empty)
+          }
+        case e: IllegalArgumentException =>
+          logger.error(s"IllegalArgumentException :: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
+          BadRequest(NOK.pocAgentError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
+        case e: Exception =>
+          logger.error(s"Exception :: exception=${e.getClass.getCanonicalName} message=${e.getMessage} -> ", e)
+          InternalServerError(NOK.pocAgentError("Sorry, something went wrong on our end"))
+      }
     }
   }
 
   before() {
-    contentType = "application/cbor"
+    contentType = "application/json"
   }
 
   notFound {

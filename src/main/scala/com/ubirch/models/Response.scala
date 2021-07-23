@@ -29,7 +29,6 @@ object NOK {
   final val SERVER_ERROR = Symbol("ServerError")
   final val PARSING_ERROR = Symbol("ParsingError")
   final val NO_ROUTE_FOUND_ERROR = Symbol("NoRouteFound")
-  final val DELETE_ERROR = Symbol("TokenDeleteError")
   final val POC_AGENT_ERROR = Symbol("PoCAgentError")
   final val AUTHENTICATION_ERROR = Symbol("AuthenticationError")
 
