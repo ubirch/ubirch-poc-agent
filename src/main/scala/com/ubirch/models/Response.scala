@@ -30,7 +30,6 @@ object NOK {
   final val PARSING_ERROR = Symbol("ParsingError")
   final val NO_ROUTE_FOUND_ERROR = Symbol("NoRouteFound")
   final val POC_AGENT_ERROR = Symbol("PoCAgentError")
-  final val AUTHENTICATION_ERROR = Symbol("AuthenticationError")
 
   def apply(errorType: Symbol, errorMessage: String): NOK = new NOK(Response.version, ok = false, errorType, errorMessage)
 
@@ -38,7 +37,6 @@ object NOK {
   def parsingError(errorMessage: String): NOK = NOK(PARSING_ERROR, errorMessage)
   def noRouteFound(errorMessage: String): NOK = NOK(NO_ROUTE_FOUND_ERROR, errorMessage)
   def pocAgentError(errorMessage: String): NOK = NOK(POC_AGENT_ERROR, errorMessage)
-  def authenticationError(errorMessage: String): NOK = NOK(AUTHENTICATION_ERROR, errorMessage)
 
 }
 
