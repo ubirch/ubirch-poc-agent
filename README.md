@@ -35,8 +35,11 @@ Note: The systems support two kinds of keystores, a jks or pkcs12. We recommend 
 
 host="http://localhost:8081"
 accept="application/cbor"
+deviceId="e1aead08-1fcb-47b3-bf2c-d3343cb979da"
+devicePwd="ab561dfd-f414-484e-9ac1-42d018f73b3d"
 
-curl -v --location --request POST ${host}/poc-agent/v1/certification \
+curl -v --location --request POST ${host}/${deviceId} \
+--header "X-Auth-Token: $devicePwd" \
 --header "Accept: $accept" \
 --header 'Content-Type: application/json' \
  --data-binary @- <<EOF | jq .
