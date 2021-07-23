@@ -1,10 +1,10 @@
 package com.ubirch
 
 import com.typesafe.scalalogging.LazyLogging
+import com.ubirch.services.execution.SSLHttpClientProvider
 import com.ubirch.services.rest.RestService
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
-
 import javax.inject.{ Inject, Singleton }
 
 /**
@@ -12,7 +12,8 @@ import javax.inject.{ Inject, Singleton }
   */
 @Singleton
 class Service @Inject() (
-    restService: RestService
+    restService: RestService,
+    sslHttpClientProvider: SSLHttpClientProvider
 )(implicit scheduler: Scheduler) extends LazyLogging {
 
   val home: String = System.getProperty("user.home")
@@ -22,6 +23,7 @@ class Service @Inject() (
 
   def start(): CancelableFuture[Unit] = {
     (for {
+      _ <- Task.delay(sslHttpClientProvider.init())
       _ <- Task.delay(restService.start())
     } yield ()).onErrorRecover {
       case e: Exception =>

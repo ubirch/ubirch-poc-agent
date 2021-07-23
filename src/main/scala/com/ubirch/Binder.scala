@@ -39,9 +39,9 @@ class Binder extends AbstractModule {
 
   def JVMHook: ScopedBindingBuilder = bind(classOf[JVMHook]).to(classOf[DefaultJVMHook])
 
-  def SSLBackendProvider: ScopedBindingBuilder = bind(classOf[SttpSSLBackendProvider]).to(classOf[DefaultSttpSSLBackend])
+  def SSLHttpClientProvider: ScopedBindingBuilder = bind(classOf[SSLHttpClientProvider]).to(classOf[DefaultSSLHttpClient])
 
-  def BackendProvider: ScopedBindingBuilder = bind(classOf[SttpBackendProvider]).to(classOf[DefaultFutureSttpBackend])
+  def HttpClientProvider: ScopedBindingBuilder = bind(classOf[HttpClientProvider]).to(classOf[DefaultFutureHttpClient])
 
   def CertifyApiService: ScopedBindingBuilder = bind(classOf[CertifyApiService]).to(classOf[CertifyApiServiceImpl])
 
@@ -59,8 +59,8 @@ class Binder extends AbstractModule {
     Formats
     Lifecycle
     JVMHook
-    SSLBackendProvider
-    BackendProvider
+    SSLHttpClientProvider
+    HttpClientProvider
     CertifyApiService
     GoClientService
     CertificationService

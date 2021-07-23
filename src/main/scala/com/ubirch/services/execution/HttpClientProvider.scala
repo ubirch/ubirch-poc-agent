@@ -16,31 +16,38 @@ import javax.inject.{ Inject, Singleton }
 import javax.net.ssl.KeyManagerFactory
 import scala.concurrent.Future
 
-trait SttpSSLBackendProvider {
+trait SSLHttpClientProvider {
+  def init(): Unit
   def backend: SttpBackend[Future, Any]
 }
 
 @Singleton
-class DefaultSttpSSLBackend @Inject() (config: Config) extends SttpSSLBackendProvider with LazyLogging {
+class DefaultSSLHttpClient @Inject() (config: Config) extends SSLHttpClientProvider with LazyLogging {
 
   val SECURITY_PROVIDER_NAME: String = BouncyCastleProvider.PROVIDER_NAME
   Security.addProvider(new BouncyCastleProvider)
 
-  private final val keystoreType = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_TYPE)
-  private final val keyStorePathAndName = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE)
-  private final val keyStorePassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD)
-  private final val keyPassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEY_PASSWORD)
+  override def init(): Unit = {
+    getContext
+    ()
+  }
 
-  private final val ks: KeyStore = KeyStore.getInstance(keystoreType, SECURITY_PROVIDER_NAME)
-  ks.load(new FileInputStream(keyStorePathAndName), keyStorePassword.toCharArray)
+  private lazy val getContext: SslContext = {
+    val keystoreType = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_TYPE)
+    val keyStorePathAndName = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE)
+    val keyStorePassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD)
+    val keyPassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEY_PASSWORD)
 
-  private final val kmf: KeyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm)
-  kmf.init(ks, keyPassword.toCharArray)
+    val ks: KeyStore = KeyStore.getInstance(keystoreType, SECURITY_PROVIDER_NAME)
+    ks.load(new FileInputStream(keyStorePathAndName), keyStorePassword.toCharArray)
 
-  private final val sslContext: SslContext = SslContextBuilder.forClient().keyManager(kmf).build()
+    val kmf: KeyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm)
+    kmf.init(ks, keyPassword.toCharArray)
+    SslContextBuilder.forClient().keyManager(kmf).build()
+  }
 
   private final val httpClientConfig: DefaultAsyncHttpClientConfig = new DefaultAsyncHttpClientConfig.Builder()
-    .setSslContext(sslContext)
+    .setSslContext(getContext)
     .build()
 
   override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend.usingConfig(httpClientConfig)
@@ -52,12 +59,12 @@ class DefaultSttpSSLBackend @Inject() (config: Config) extends SttpSSLBackendPro
 
 }
 
-trait SttpBackendProvider {
+trait HttpClientProvider {
   def backend: SttpBackend[Future, Any]
 }
 
 @Singleton
-class DefaultFutureSttpBackend extends SttpBackendProvider with LazyLogging {
+class DefaultFutureHttpClient extends HttpClientProvider with LazyLogging {
   /**
     * This is one single sttp backend with Future
     *

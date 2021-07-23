@@ -7,6 +7,8 @@ services:
       - './go_client:/data'
     networks:
       - poc_agent_network
+    environment:
+      - UBIRCH_ENV=dev
 
   poc_agent:
     image: ubirch/ubirch-poc-agent:202107231830-dev

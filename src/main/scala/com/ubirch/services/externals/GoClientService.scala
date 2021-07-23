@@ -7,7 +7,7 @@ import com.google.inject.name.Named
 import com.typesafe.config.Config
 import com.ubirch.models.requests.{ CertificationRequest, UPPSigningRequest }
 import com.ubirch.models.responses.SigningResponse
-import com.ubirch.services.execution.SttpBackendProvider
+import com.ubirch.services.execution.HttpClientProvider
 import com.ubirch.{ ConfPaths, HttpResponseException, InternalException }
 import monix.eval.Task
 import monix.execution.Scheduler
@@ -24,7 +24,7 @@ trait GoClientService {
 }
 
 class GoClientServiceImpl @Inject() (
-    sttpBackendProvider: SttpBackendProvider,
+    sttpBackendProvider: HttpClientProvider,
     conf: Config,
     @Named("io") scheduler: Scheduler
 )(implicit formats: Formats)
