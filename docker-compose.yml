@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  go_client:
+    image: ubirch/ubirch-client:v1.2.2
+    container_name: ubirch_client
+    ports:
+      - 8080:8080
+    volumes:
+      - './go_client:/data'
+
+  poc_agent:
+    image: ubirch/ubirch-poc-agent:latest
+    container_name: poc_agent
+    ports:
+      - 8081:8081
+    depends_on:
+      - go_client
