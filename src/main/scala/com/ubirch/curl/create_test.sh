@@ -1,11 +1,13 @@
 #!/bin/bash
 
 host="http://localhost:8081"
+accept="application/cbor"
 
 curl -v --location --request POST ${host}/poc-agent/v1/certification \
---header 'Accept: application/cbor+base45' \
+--header "Accept: $accept" \
 --header 'Content-Type: application/json' \
---data-raw '{
+ --data-binary @- <<EOF | jq .
+{
   "nam": {
     "fn": "Musterfrau",
     "gn": "Erika"
@@ -21,7 +23,8 @@ curl -v --location --request POST ${host}/poc-agent/v1/certification \
       "sc": "2021-04-13T14:20:00+00:00",
       "dr": "2021-04-13T20:00:01+00:00",
       "tc": "Hauptbahnhof Köln",
-      "se": "12345678"
+      "se": "$(openssl rand -hex 8)"
     }
   ]
-}' | jq .
+}
+EOF
