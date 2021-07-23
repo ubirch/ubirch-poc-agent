@@ -3,7 +3,7 @@ package com.ubirch.controllers
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.HttpResponseException
-import com.ubirch.controllers.concerns.ControllerBase
+import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
 import com.ubirch.models.NOK
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.{ CertificationResponse, SigningResponse }
@@ -16,8 +16,10 @@ import org.json4s.Formats
 import org.scalatra.swagger.{ ResponseMessage, Swagger, SwaggerSupportSyntax }
 import org.scalatra._
 
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
+import scala.util.{ Failure, Success, Try }
 
 class CertificationController @Inject() (
     config: Config,
@@ -64,27 +66,38 @@ class CertificationController @Inject() (
           )
       ))
 
-  post("/certification", operation(certification)) {
+  post("/:deviceId", operation(certification)) {
     asyncResult("certification") { implicit request => _ =>
-      (for {
-        maybeAcceptHeader <- getAccept(request)
-        _ = if (maybeAcceptHeader.isEmpty) logger.debug("No accept header found, assuming application/cbor")
-        certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
-        response <- certificationService.performCertification(certificationRequest, maybeAcceptHeader.getOrElse(ContentTypeCbor))
-      } yield Ok(response)).onErrorRecover {
-        case e: HttpResponseException[_] =>
-          logger.error(s"HttpResponseException ::  http_code=${e.statusCode} error=${e.message}")
-          //TODO: Unify responses
-          e.body match {
-            case body: String => ActionResult(e.statusCode, NOK.pocAgentError(body), Map.empty)
-            case body: SigningResponse => ActionResult(e.statusCode, body, Map.empty)
-          }
-        case e: IllegalArgumentException =>
-          logger.error(s"IllegalArgumentException :: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
-          BadRequest(NOK.pocAgentError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
-        case e: Exception =>
-          logger.error(s"Exception :: exception=${e.getClass.getCanonicalName} message=${e.getMessage} -> ", e)
-          InternalServerError(NOK.pocAgentError("Sorry, something went wrong on our end"))
+      getParamAsUUID("deviceId", _ => "Expected deviceId in UUID format") { deviceId =>
+        (for {
+          devicePwd <- getHeader(request, HeaderKeys.AUTH_TOKEN)
+          maybeAcceptHeader <- getAccept(request)
+          _ = if (maybeAcceptHeader.isEmpty) logger.debug("No accept header found, assuming application/cbor")
+          certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
+          response <- certificationService.performCertification(
+            certificationRequest,
+            maybeAcceptHeader.getOrElse(ContentTypeCbor),
+            deviceId,
+            devicePwd
+          )
+        } yield Ok(response)).onErrorRecover {
+          case e: HttpResponseException[_] =>
+            logger.error(s"HttpResponseException ::  http_code=${e.statusCode} error=${e.message}")
+            //TODO: Unify responses
+            e.body match {
+              case body: String => ActionResult(e.statusCode, NOK.pocAgentError(body), Map.empty)
+              case body: SigningResponse => ActionResult(e.statusCode, body, Map.empty)
+            }
+          case e: IllegalArgumentException =>
+            logger.error(
+              s"IllegalArgumentException :: exception=${e.getClass.getCanonicalName} message=${e.getMessage}",
+              e
+            )
+            BadRequest(NOK.pocAgentError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
+          case e: Exception =>
+            logger.error(s"Exception :: exception=${e.getClass.getCanonicalName} message=${e.getMessage} -> ", e)
+            InternalServerError(NOK.pocAgentError("Sorry, something went wrong on our end"))
+        }
       }
     }
   }
@@ -103,6 +116,20 @@ class CertificationController @Inject() (
         )
         NotFound(NOK.noRouteFound(requestPath + " might exist in another universe"))
       }
+    }
+  }
+
+  private def getParamAsUUID(
+      paramName: String,
+      errorMsg: String => String
+  )(logic: UUID => Task[ActionResult]): Task[ActionResult] = {
+    val id = params(paramName)
+    Try(UUID.fromString(id)) match {
+      case Success(uuid) => logic(uuid)
+      case Failure(ex) =>
+        val error = errorMsg(id)
+        logger.error(error, ex)
+        Task(BadRequest(NOK.pocAgentError(error)))
     }
   }
 }

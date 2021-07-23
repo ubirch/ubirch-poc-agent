@@ -33,8 +33,6 @@ object ConfPaths {
 
   trait UppSigningPaths {
     final val ENDPOINT = "system.upp.endpoint"
-    final val DEVICE_ID = "system.upp.signing.deviceId"
-    final val DEVICE_PWD = "system.upp.signing.devicePwd"
   }
 
   trait CertifyPaths {
