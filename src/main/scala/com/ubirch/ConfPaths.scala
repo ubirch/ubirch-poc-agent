@@ -17,11 +17,10 @@ object ConfPaths {
   }
 
   trait HttpClientConfPaths {
-    final val HTTP_POOL_DEFAULT = "system.http.client.httpPoolDefault"
-    final val HTTP_POOL_MAX = "system.http.client.httpPoolMax"
-    final val HTTP_DEFAULT_MAX_PER_ROUTE = "system.http.client.httpDefaultMaxPerRoute"
-    final val TIMEOUT = "system.http.client.timeout"
-    final val HTTP_CONN_TIME_TO_LIVE = "system.http.client.timeToLive"
+    final val HTTP_SSL_CONTEXT_KEYSTORE_TYPE = "system.http.client.sslKeyStoreType"
+    final val HTTP_SSL_CONTEXT_KEYSTORE = "system.http.client.sslKeyStore"
+    final val HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD = "system.http.client.sslKeyStorePassword"
+    final val HTTP_SSL_CONTEXT_KEY_PASSWORD = "system.http.client.keyPassword"
   }
 
   trait ExecutionContextConfPaths {

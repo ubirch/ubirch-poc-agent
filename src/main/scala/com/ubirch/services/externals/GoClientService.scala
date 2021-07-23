@@ -1,19 +1,18 @@
-package com.ubirch.services.external
+package com.ubirch.services.externals
 
 import com.typesafe.config.Config
 import com.ubirch.models.requests.{ CertificationRequest, UPPSigningRequest }
 import com.ubirch.models.responses.SigningResponse
 import com.ubirch.services.execution.SttpBackendProvider
-import com.ubirch.{ ConfPaths, InternalException }
+import com.ubirch.{ ConfPaths, HttpResponseException, InternalException }
 import monix.eval.Task
 import org.json4s.Formats
 import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
 import sttp.client3._
-import sttp.client3.json4s.asJsonAlways
+import sttp.client3.json4s._
 import sttp.model.MediaType
-
 import javax.inject.Inject
 
 trait GoClientService {
@@ -37,15 +36,18 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
       .contentType(MediaType.ApplicationJson)
       .body(compact(parse(write(request))))
       .post(uri"$endpoint/${deviceId}")
-      .response(asJsonAlways[SigningResponse])
+      .response(asJsonEither[SigningResponse, SigningResponse])
 
     def sendRequest(request: UPPSigningRequest) = {
       Task.fromFuture(
         sttpBackendProvider
           .backend
-          .send(buildRequest(request)))
-        .flatMap(_.body match {
+          .send(buildRequest(request))
+      )
+        .flatMap(r => r.body match {
           case Right(response) => Task(response)
+          case Left(error: HttpError[SigningResponse]) =>
+            Task.raiseError(HttpResponseException(Symbol("UPP Signer"), "Error processing Certify API request", r.code.code, r.headers.map(x => (x.name, x.value)).toMap, error.body))
           case Left(error) =>
             Task.raiseError(InternalException(s"Failed to send UPP signing request because: ${error.getMessage}"))
         })
@@ -61,7 +63,8 @@ class GoClientServiceImpl @Inject() (sttpBackendProvider: SttpBackendProvider, c
     requests match {
       case request :: Nil => Task(request)
       case otherwise => Task.raiseError(
-          InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}"))
+        InternalException(s"Expected to have only one test in the request, but instead got ${otherwise.size}")
+      )
     }
   }
 
