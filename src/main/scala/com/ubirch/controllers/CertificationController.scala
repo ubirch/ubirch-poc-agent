@@ -6,7 +6,7 @@ import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.HttpResponseException
 import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
-import com.ubirch.models.NOK
+import com.ubirch.models.{ Accepts, NOK }
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.{ CertificationResponse, SigningResponse }
 import com.ubirch.services.certification.CertificationService
@@ -81,7 +81,7 @@ class CertificationController @Inject() (
         certificationRequest <- Task(ReadBody.readJson[CertificationRequest](x => x).extracted)
         response <- certificationService.performCertification(
           certificationRequest,
-          maybeAcceptHeader.getOrElse(ContentTypeCbor),
+          maybeAcceptHeader.getOrElse(Accepts.ContentTypeCbor),
           deviceId,
           devicePwd
         )

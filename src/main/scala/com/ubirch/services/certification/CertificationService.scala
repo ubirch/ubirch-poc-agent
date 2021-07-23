@@ -2,13 +2,12 @@ package com.ubirch.services.certification
 
 import java.util.{ Base64, UUID }
 
+import com.ubirch.models.Accepts
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.CertificationResponse
 import com.ubirch.services.externals.{ CertifyApiService, GoClientService }
 import monix.eval.Task
-import nl.minvws.encoding.Base45
 import sttp.model.MediaType
-
 import javax.inject.Inject
 
 trait CertificationService {
@@ -31,16 +30,24 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
     for {
       certifyResponse <- certifyApiService.registerSeal(certificationRequest, mediaType)
       signingResponse <- goClientService.sign(certificationRequest, deviceId, devicePwd)
-    } yield CertificationResponse(
-      hash = signingResponse.hash,
-      upp = signingResponse.upp,
-      dcc = if (!isMediaTypePdf(mediaType)) Some(Base45.getEncoder.encodeToString(certifyResponse.body)) else None,
-      pdf = if (isMediaTypePdf(mediaType)) Some(Base64.getEncoder.encodeToString(certifyResponse.body)) else None,
-      response = signingResponse.response,
-      requestId = signingResponse.requestId,
-      error = signingResponse.error
-    )
+    } yield {
+
+      val dcc = if (Accepts.isMediaTypeCbor(mediaType)) {
+        Option(Base64.getEncoder.encodeToString(certifyResponse.body))
+      } else if (Accepts.isMediaTypeCborBase45(mediaType)) {
+        Option(new String(certifyResponse.body))
+      } else None
+
+      CertificationResponse(
+        hash = signingResponse.hash,
+        upp = signingResponse.upp,
+        dcc = dcc,
+        pdf = if (Accepts.isMediaTypePdf(mediaType)) Some(Base64.getEncoder.encodeToString(certifyResponse.body)) else None,
+        response = signingResponse.response,
+        requestId = signingResponse.requestId,
+        error = signingResponse.error
+      )
+    }
   }
 
-  private def isMediaTypePdf(mediaType: MediaType) = if (mediaType == MediaType.ApplicationPdf) true else false
 }
