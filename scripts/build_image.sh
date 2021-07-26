@@ -10,5 +10,6 @@ if [ -z "$1" ]
 fi
 
 echo "Building image with name $BUILD_NUMBER"
+cd ..
 mvn clean package -Dbuild.number="$BUILD_NUMBER"
 
