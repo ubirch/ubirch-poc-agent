@@ -22,6 +22,7 @@ trait CertificationService {
 
 class CertificationServiceImpl @Inject() (goClientService: GoClientService, certifyApiService: CertifyApiService)
   extends CertificationService with LazyLogging {
+
   override def performCertification(
       certificationRequest: CertificationRequest,
       mediaType: MediaType,
@@ -49,7 +50,7 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
         error = signingResponse.error
       )
 
-      logger.info(s"upp_dcc_certification=${res.hash} request_id=${res.requestID.getOrElse("-")}")
+      logger.info(s"upp_dcc_certification=${res.hash} request_id=${res.requestID.getOrElse("-")} X-DGC-ID=${certifyResponse.`X-DGC-ID`.getOrElse("-")}")
 
       res
 

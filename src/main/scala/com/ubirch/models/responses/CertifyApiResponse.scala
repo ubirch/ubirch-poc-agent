@@ -1,3 +1,3 @@
 package com.ubirch.models.responses
 
-case class CertifyApiResponse(body: Array[Byte])
+case class CertifyApiResponse(`X-DGC-ID`: Option[String], body: Array[Byte])

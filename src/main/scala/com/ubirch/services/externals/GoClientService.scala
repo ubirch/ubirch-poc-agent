@@ -11,7 +11,7 @@ import com.ubirch.services.execution.HttpClientProvider
 import com.ubirch.{ ConfPaths, HttpResponseException, InternalException }
 import monix.eval.Task
 import monix.execution.Scheduler
-import org.json4s.Formats
+import org.json4s.{ Formats, JValue }
 import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
@@ -46,7 +46,7 @@ class GoClientServiceImpl @Inject() (
       .contentType(MediaType.ApplicationJson)
       .body(compact(parse(write(request))))
       .post(uri"$endpoint/${deviceId.toString}")
-      .response(asJsonEither[SigningResponse, SigningResponse])
+      .response(asJson[SigningResponse])
 
     def sendRequest(request: UPPSigningRequest) = {
       Task.fromFuture(
@@ -57,14 +57,22 @@ class GoClientServiceImpl @Inject() (
         .flatMap(r =>
           r.body match {
             case Right(response) => Task(response)
-            case Left(error: HttpError[SigningResponse]) =>
+            case Left(error: HttpError[String]) =>
+
+              val hashExists = (Serialization.read[JValue](error.body) \ "hash").extractOpt[String].isDefined
+              val maybeErrorId = (Serialization.read[JValue](error.body) \ "response" \ "header" \ "X-Err").extractOpt[List[String]].getOrElse(Nil).headOption.map(x => Map("X-Err" -> x)).getOrElse(Map.empty)
+              val maybeRequestId = (Serialization.read[JValue](error.body) \ "requestID").extractOpt[String].map(x => Map("requestID" -> x)).getOrElse(Map.empty)
+
+              val headers = maybeErrorId ++ maybeRequestId
+
               Task.raiseError(HttpResponseException(
                 Symbol("UPP Signer"),
-                "Error processing Certify API request",
+                "Error processing UPP Signer request",
                 r.code.code,
-                r.headers.map(x => (x.name, x.value)).toMap,
-                error.body
+                headers,
+                if (hashExists) "Error anchoring upp: " + headers.mkString(", ") else error.body.trim
               ))
+
             case Left(error) =>
               Task.raiseError(InternalException(s"Failed to send UPP signing request because: ${error.getMessage}"))
           })

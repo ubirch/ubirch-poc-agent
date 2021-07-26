@@ -50,7 +50,7 @@ class CertifyApiServiceImpl @Inject() (
       ).executeOn(scheduler).flatMap(r =>
           r.body match {
             case Right(response) =>
-              Task(CertifyApiResponse(response))
+              Task(CertifyApiResponse(r.header("X-DGC-ID"), response))
             case Left(error) =>
               Task.raiseError(HttpResponseException(
                 Symbol("Certify API"),
