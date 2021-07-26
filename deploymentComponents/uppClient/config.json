@@ -2,7 +2,7 @@
   "devices": {
     "8e6a5679-5b0c-4a1e-9aa5-4f6e42fff5b3": "changeme"
   },
-  "secret": "MTIzNDU2Nzg5MDEyMzQ1Ng==",
+  "secret": "changeme",
   "env": "dev",
   "debug": false
 }
