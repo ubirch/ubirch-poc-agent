@@ -89,7 +89,7 @@ class CertificationController @Inject() (
           deviceId,
           devicePwd
         )
-      } yield Ok(response)).onErrorRecover {
+      } yield Ok(response, Map("X-DGC-ID" -> response.dccID.getOrElse("-")))).onErrorRecover {
         case e: HttpResponseException =>
           logger.error(s"HttpResponseException :: http_code=${e.statusCode} error=${e.message} message=${e.body}")
           ActionResult(e.statusCode, NOK.pocAgentError(e.body), e.headers)

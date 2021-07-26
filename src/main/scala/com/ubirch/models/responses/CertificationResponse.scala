@@ -7,5 +7,6 @@ case class CertificationResponse(
     pdf: Option[String],
     response: Response,
     requestID: Option[String],
+    dccID: Option[String],
     error: Option[String]
 )

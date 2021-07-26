@@ -47,6 +47,7 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
         pdf = if (Accepts.isMediaTypePdf(mediaType)) Some(Base64.getEncoder.encodeToString(certifyResponse.body)) else None,
         response = signingResponse.response,
         requestID = signingResponse.requestID,
+        dccID = certifyResponse.`X-DGC-ID`,
         error = signingResponse.error
       )
 
