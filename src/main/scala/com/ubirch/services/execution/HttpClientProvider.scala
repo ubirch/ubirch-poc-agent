@@ -6,14 +6,15 @@ import java.security.{ KeyStore, Security }
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import com.ubirch.ConfPaths.HttpClientConfPaths
+import com.ubirch.services.lifecycle.Lifecycle
 import io.netty.handler.ssl.{ SslContext, SslContextBuilder }
 import org.asynchttpclient.DefaultAsyncHttpClientConfig
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import sttp.client3.SttpBackend
 import sttp.client3.asynchttpclient.future.AsyncHttpClientFutureBackend
-
 import javax.inject.{ Inject, Singleton }
 import javax.net.ssl.KeyManagerFactory
+
 import scala.concurrent.Future
 
 trait SSLHttpClientProvider {
@@ -22,7 +23,7 @@ trait SSLHttpClientProvider {
 }
 
 @Singleton
-class DefaultSSLHttpClient @Inject() (config: Config) extends SSLHttpClientProvider with LazyLogging {
+class DefaultSSLHttpClient @Inject() (config: Config, lifecycle: Lifecycle) extends SSLHttpClientProvider with LazyLogging {
 
   val SECURITY_PROVIDER_NAME: String = BouncyCastleProvider.PROVIDER_NAME
   Security.addProvider(new BouncyCastleProvider)
@@ -52,9 +53,11 @@ class DefaultSSLHttpClient @Inject() (config: Config) extends SSLHttpClientProvi
 
   override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend.usingConfig(httpClientConfig)
 
-  sys.addShutdownHook {
-    logger.info("Shutting down Mutual Http Client")
-    val _ = backend.close()
+  lifecycle.addStopHook { () =>
+    Future.successful {
+      logger.info("Shutting down Mutual Http Client")
+      val _ = backend.close()
+    }
   }
 
 }
@@ -64,17 +67,15 @@ trait HttpClientProvider {
 }
 
 @Singleton
-class DefaultFutureHttpClient extends HttpClientProvider with LazyLogging {
-  /**
-    * This is one single sttp backend with Future
-    *
-    * @Important: when you call a http request with Future, this backend object has to be used.
-    */
+class DefaultFutureHttpClient @Inject() (lifecycle: Lifecycle) extends HttpClientProvider with LazyLogging {
+
   override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend()
 
-  sys.addShutdownHook {
-    logger.info("Shutting down Http Client")
-    val _ = backend.close()
+  lifecycle.addStopHook { () =>
+    Future.successful {
+      logger.info("Shutting down Http Client")
+      val _ = backend.close()
+    }
   }
 
 }
