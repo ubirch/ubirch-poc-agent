@@ -4,7 +4,7 @@ host="http://localhost:8081"
 accept="application/cbor"
 
 deviceId="8e6a5679-5b0c-4a1e-9aa5-4f6e42fff5b3"
-devicePwd="bdb70910-6006-49d2-b0a9-7fb63bd8895a"
+devicePwd="change"
 
 curl -v --location --request POST ${host}/${deviceId} \
 --header "X-Auth-Token: $devicePwd" \
