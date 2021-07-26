@@ -11,13 +11,15 @@ import com.ubirch.services.execution.HttpClientProvider
 import com.ubirch.{ ConfPaths, HttpResponseException, InternalException }
 import monix.eval.Task
 import monix.execution.Scheduler
-import org.json4s.{ Formats, JValue }
 import org.json4s.jackson.JsonMethods.{ compact, parse }
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
+import org.json4s.{ Formats, JValue }
 import sttp.client3._
 import sttp.client3.json4s._
 import sttp.model.MediaType
+
+import scala.util.Try
 
 trait GoClientService {
   def sign(certificationRequest: CertificationRequest, deviceId: UUID, devicePwd: String): Task[SigningResponse]
@@ -59,18 +61,19 @@ class GoClientServiceImpl @Inject() (
             case Right(response) => Task(response)
             case Left(error: HttpError[String]) =>
 
-              val hashExists = (Serialization.read[JValue](error.body) \ "hash").extractOpt[String].isDefined
-              val maybeErrorId = (Serialization.read[JValue](error.body) \ "response" \ "header" \ "X-Err").extractOpt[List[String]].getOrElse(Nil).headOption.map(x => Map("X-Err" -> x)).getOrElse(Map.empty)
-              val maybeRequestId = (Serialization.read[JValue](error.body) \ "requestID").extractOpt[String].map(x => Map("requestID" -> x)).getOrElse(Map.empty)
-
-              val headers = maybeErrorId ++ maybeRequestId
+              val tryBody = Try(Serialization.read[JValue](error.body))
+              val headers = tryBody.map { parsedBody =>
+                val maybeErrorId = (parsedBody \ "response" \ "header" \ "X-Err").extractOpt[List[String]].getOrElse(Nil).headOption.map(x => Map("X-Err" -> x)).getOrElse(Map.empty)
+                val maybeRequestId = (parsedBody \ "requestID").extractOpt[String].map(x => Map("requestID" -> x)).getOrElse(Map.empty)
+                maybeErrorId ++ maybeRequestId
+              }.getOrElse(Map.empty)
 
               Task.raiseError(HttpResponseException(
                 Symbol("UPP Signer"),
                 "Error processing UPP Signer request",
                 r.code.code,
                 headers,
-                if (hashExists) "Error anchoring upp: " + headers.mkString(", ") else error.body.trim
+                if (tryBody.isSuccess) "Error anchoring upp: " + headers.mkString(", ") else error.body.trim
               ))
 
             case Left(error) =>

@@ -6,7 +6,7 @@ import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.HttpResponseException
 import com.ubirch.controllers.concerns.{ ControllerBase, HeaderKeys }
-import com.ubirch.models.{ Accepts, NOK }
+import com.ubirch.models.{ Accepts, Return }
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.CertificationResponse
 import com.ubirch.services.certification.CertificationService
@@ -92,13 +92,13 @@ class CertificationController @Inject() (
       } yield Ok(response, Map("X-DGC-ID" -> response.dccID.getOrElse("-")))).onErrorRecover {
         case e: HttpResponseException =>
           logger.error(s"HttpResponseException :: http_code=${e.statusCode} error=${e.message} message=${e.body}")
-          ActionResult(e.statusCode, NOK.pocAgentError(e.body), e.headers)
+          ActionResult(e.statusCode, Return.nok(e.body), e.headers.filter { case (k, _) => k == "X-Err" || k == "requestID" })
         case e: IllegalArgumentException =>
           logger.error(s"IllegalArgumentException :: exception=${e.getClass.getCanonicalName} message=${e.getMessage}", e)
-          BadRequest(NOK.pocAgentError(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
+          BadRequest(Return.nok(s"Sorry, there is something invalid in your request: ${e.getMessage}"))
         case e: Exception =>
           logger.error(s"Exception :: exception=${e.getClass.getCanonicalName} message=${e.getMessage} -> ", e)
-          InternalServerError(NOK.pocAgentError("Sorry, something went wrong on our end"))
+          InternalServerError(Return.nok("Sorry, something went wrong on our end"))
       }
     }
   }
@@ -115,7 +115,7 @@ class CertificationController @Inject() (
           requestPath,
           Option(request).map(_.getQueryString).getOrElse("")
         )
-        NotFound(NOK.noRouteFound(requestPath + " might exist in another universe"))
+        NotFound(Return.nok(requestPath + " might exist in another universe"))
       }
     }
   }

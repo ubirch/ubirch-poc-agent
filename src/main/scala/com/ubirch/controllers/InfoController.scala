@@ -3,7 +3,7 @@ package com.ubirch.controllers
 import com.typesafe.config.Config
 import com.ubirch.ConfPaths.GenericConfPaths
 import com.ubirch.controllers.concerns.ControllerBase
-import com.ubirch.models.{ NOK, Return }
+import com.ubirch.models.Return
 import io.prometheus.client.Counter
 import monix.eval.Task
 import monix.execution.Scheduler
@@ -44,7 +44,7 @@ class InfoController @Inject() (config: Config, val swagger: Swagger, jFormats: 
   get("/") {
     asyncResult("root") { _ => _ =>
       Task {
-        Ok(Return("Hallo, Hola, こんにちは, Hello, Salut, Hej, this is the Ubirch Point of Certification agent."))
+        Ok(Return.ok("Hallo, Hola, こんにちは, Hello, Salut, Hej, this is the Ubirch Point of Certification agent."))
       }
     }
   }
@@ -57,7 +57,7 @@ class InfoController @Inject() (config: Config, val swagger: Swagger, jFormats: 
     asyncResult("not_found") { implicit request => _ =>
       Task {
         logger.info("controller=InfoController route_not_found={} query_string={}", requestPath, Option(request).map(_.getQueryString).getOrElse(""))
-        NotFound(NOK.noRouteFound(requestPath + " might exist in another universe"))
+        NotFound(Return.nok(requestPath + " might exist in another universe"))
       }
     }
   }

@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets
 import java.util.Date
 
 import com.typesafe.scalalogging.LazyLogging
-import com.ubirch.models.NOK
+import com.ubirch.models.Return
 import monix.eval.Task
 import monix.execution.{ CancelableFuture, Scheduler }
 import org.apache.commons.compress.utils.IOUtils
@@ -115,11 +115,11 @@ abstract class ControllerBase extends ScalatraServlet
           case FailedExtractionException(_, rawBody, e) =>
             val msg = s"Couldn't parse [$rawBody] due to exception=${e.getClass.getCanonicalName} message=${e.getMessage}"
             logger.error(msg)
-            BadRequest(NOK.parsingError(msg))
+            BadRequest(Return.nok(msg))
           case e: Exception =>
             val cause = Try(e.getCause.getMessage).getOrElse(e.getMessage)
             logger.error(s"Error 0.1 exception=${e.getClass.getCanonicalName} message=$cause", e)
-            InternalServerError(NOK.serverError("Sorry, something happened"))
+            InternalServerError(Return.nok("Sorry, something happened"))
         }
     } yield {
       res
