@@ -19,7 +19,8 @@ class UPPSigningRequestTest extends AnyWordSpec with Matchers {
             se = "2fe00c151cb726bb9ed7",
             tg = "840539006",
             tt = "LP6464-4",
-            nm = "Roche LightCycler qPCR",
+            nm = Some("Roche LightCycler qPCR"),
+            ma = Some("Manu"), //Not mapped
             tr = "260415000",
             sc = "2021-04-13T14:20:00+00:00",
             tc = "Hauptbahnhof Köln"
@@ -29,7 +30,8 @@ class UPPSigningRequestTest extends AnyWordSpec with Matchers {
             se = "1ed99b040bc615ac8fc8",
             tg = "987654321",
             tt = "LP6464-5",
-            nm = "Roche LightCycler qPCR-2",
+            nm = Some("Roche LightCycler qPCR-2"),
+            ma = None,
             tr = "260415012",
             sc = "2021-04-13T14:22:00+00:00",
             tc = "Hauptbahnhof Köln-2"

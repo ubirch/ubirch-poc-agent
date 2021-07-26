@@ -8,13 +8,16 @@ case class CertificationRequest(
 
 case class Name(fn: String, gn: String)
 
+//For more reference check:
+//https://github.com/ubirch/ubirch-certify-service/blob/main/src/main/scala/com/ubirch/models/DigitalGreenCertificateSeed.scala#L10
 case class Test(
     id: String,
-    se: String,
     tg: String,
     tt: String,
-    nm: String,
+    nm: Option[String],
+    ma: Option[String],
     tr: String,
     sc: String,
-    tc: String
+    tc: String,
+    se: String // This value is not part of the dcc standard
 )
