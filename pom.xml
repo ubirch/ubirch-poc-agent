@@ -54,7 +54,7 @@
 
         <maven.compiler.source>1.11</maven.compiler.source>
         <maven.compiler.target>1.11</maven.compiler.target>
-        <build.number>${timestamp}-dev</build.number>
+        <build.number>v${project.version}-${timestamp}-dev</build.number>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <encoding>UTF-8</encoding>
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -86,7 +86,6 @@
         <bcprov-jdk15on.version>1.69</bcprov-jdk15on.version>
 
         <jwt-core.version>5.0.0</jwt-core.version>
-        <cose-java.version>1.1.0</cose-java.version>
         <ehn-digital-green-development.base45.version>0.0.3</ehn-digital-green-development.base45.version>
 
         <json4s-native.version>3.6.6</json4s-native.version>
@@ -110,8 +109,6 @@
         <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
         <!-- plugins -->
 
-        <flyway.version>7.10.0</flyway.version>
-
     </properties>
 
     <repositories>
@@ -126,24 +123,6 @@
     </repositories>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ubirch</groupId>
-            <artifactId>ubirch-crypto</artifactId>
-            <version>${ubirch-crypto.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -337,20 +316,6 @@
             <version>10.0.5</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.pauldijou/jwt-core -->
-        <dependency>
-            <groupId>com.pauldijou</groupId>
-            <artifactId>jwt-core_${scala.major.version}</artifactId>
-            <version>${jwt-core.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.bitbucket.b_c/jose4j -->
-        <dependency>
-            <groupId>org.bitbucket.b_c</groupId>
-            <artifactId>jose4j</artifactId>
-            <version>0.7.8</version>
-        </dependency>
-
         <!-- test dependencies -->
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -359,29 +324,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.augustcellars.cose/cose-java -->
-        <dependency>
-            <groupId>com.augustcellars.cose</groupId>
-            <artifactId>cose-java</artifactId>
-            <version>${cose-java.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.upokecenter</groupId>
-            <artifactId>cbor</artifactId>
-            <version>4.4.3</version>
-        </dependency>
-
         <dependency>
             <groupId>io.github.ehn-digital-green-development</groupId>
             <artifactId>base45</artifactId>
             <version>${ehn-digital-green-development.base45.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.everit-org.json-schema</groupId>
-            <artifactId>org.everit.json.schema</artifactId>
-            <version>1.12.3</version>
         </dependency>
 
         <!-- STTP -->
@@ -405,31 +351,6 @@
             <version>${com.softwaremill.sttp.client3.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-awt-util -->
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-awt-util</artifactId>
-            <version>1.14</version>
-        </dependency>
-
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
-            <version>2.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.12.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-engine-core -->
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>2.3</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -444,7 +365,6 @@
                     <release>11</release>
                 </configuration>
             </plugin>
-
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
