@@ -45,11 +45,11 @@ class CertificationServiceImpl @Inject() (goClientService: GoClientService, cert
         dcc = dcc,
         pdf = if (Accepts.isMediaTypePdf(mediaType)) Some(Base64.getEncoder.encodeToString(certifyResponse.body)) else None,
         response = signingResponse.response,
-        requestId = signingResponse.requestId,
+        requestID = signingResponse.requestID,
         error = signingResponse.error
       )
 
-      logger.info(s"upp_dcc_certification=${res.hash} request_id=${res.requestId.getOrElse("-")}")
+      logger.info(s"upp_dcc_certification=${res.hash} request_id=${res.requestID.getOrElse("-")}")
 
       res
 
