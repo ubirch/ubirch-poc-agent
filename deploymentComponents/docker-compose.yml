@@ -4,15 +4,15 @@ services:
     image: ubirch/ubirch-client:v1.2.2
     container_name: ubirch_client
     volumes:
-      - './deploymentComponents/uppClient:/data'
+      - './uppClient:/data'
     networks:
       - poc_agent_network
 
   poc_agent:
-    image: ubirch/ubirch-poc-agent:v0.1.0-202107260929-dev
+    image: ubirch/ubirch-poc-agent:v0.1.0
     container_name: poc_agent
     volumes:
-      - './deploymentComponents/pocAgent:/data'
+      - './pocAgent:/data'
     ports:
       - 8081:8081
     depends_on:
@@ -25,7 +25,7 @@ services:
       - POC_AGENT_SVC_UPP_ENDPOINT=http://go_client:8080
       - POC_AGENT_SVC_CERTIFY_ENDPOINT=https://api.certify.dev.ubirch.com
       - POC_AGENT_SVC_HTTP_SWAGGER_ACTIVATED=true
-    env_file: ./deploymentComponents/poc_agent.env
+    env_file: poc_agent.env
     networks:
       - poc_agent_network
     mem_limit: 1000m
