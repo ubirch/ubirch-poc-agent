@@ -23,32 +23,17 @@ import scala.concurrent.ExecutionContext
 class Binder extends AbstractModule {
 
   def Config: ScopedBindingBuilder = bind(classOf[Config]).toProvider(classOf[ConfigProvider])
-
   def ExecutionContext: ScopedBindingBuilder = bind(classOf[ExecutionContext]).toProvider(classOf[ExecutionProvider])
-
   def Scheduler: ScopedBindingBuilder = bind(classOf[Scheduler]).toProvider(classOf[SchedulerProvider])
-
-  def SchedulerIO: ScopedBindingBuilder =
-    bind(classOf[Scheduler]).annotatedWith(Names.named("io")).toProvider(classOf[SchedulerIOProvider])
-
+  def SchedulerIO: ScopedBindingBuilder = bind(classOf[Scheduler]).annotatedWith(Names.named("io")).toProvider(classOf[SchedulerIOProvider])
   def Swagger: ScopedBindingBuilder = bind(classOf[Swagger]).toProvider(classOf[SwaggerProvider])
-
   def Formats: ScopedBindingBuilder = bind(classOf[Formats]).toProvider(classOf[JsonFormatsProvider])
-
   def Lifecycle: ScopedBindingBuilder = bind(classOf[Lifecycle]).to(classOf[DefaultLifecycle])
-
   def JVMHook: ScopedBindingBuilder = bind(classOf[JVMHook]).to(classOf[DefaultJVMHook])
-
-  def SSLHttpClientProvider: ScopedBindingBuilder = bind(classOf[SSLHttpClientProvider]).to(classOf[DefaultSSLHttpClient])
-
-  def HttpClientProvider: ScopedBindingBuilder = bind(classOf[HttpClientProvider]).to(classOf[DefaultFutureHttpClient])
-
+  def HttpClientProvider: ScopedBindingBuilder = bind(classOf[HttpClientProvider]).to(classOf[DefaultHttpClient])
   def CertifyApiService: ScopedBindingBuilder = bind(classOf[CertifyApiService]).to(classOf[CertifyApiServiceImpl])
-
   def GoClientService: ScopedBindingBuilder = bind(classOf[GoClientService]).to(classOf[GoClientServiceImpl])
-
-  def CertificationService: ScopedBindingBuilder =
-    bind(classOf[CertificationService]).to(classOf[CertificationServiceImpl])
+  def CertificationService: ScopedBindingBuilder = bind(classOf[CertificationService]).to(classOf[CertificationServiceImpl])
 
   override def configure(): Unit = {
     Config
@@ -59,7 +44,6 @@ class Binder extends AbstractModule {
     Formats
     Lifecycle
     JVMHook
-    SSLHttpClientProvider
     HttpClientProvider
     CertifyApiService
     GoClientService

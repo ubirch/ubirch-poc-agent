@@ -17,23 +17,23 @@ import javax.net.ssl.KeyManagerFactory
 
 import scala.concurrent.Future
 
-trait SSLHttpClientProvider {
+trait HttpClientProvider {
   def init(): Unit
   def backend: SttpBackend[Future, Any]
 }
 
 @Singleton
-class DefaultSSLHttpClient @Inject() (config: Config, lifecycle: Lifecycle) extends SSLHttpClientProvider with LazyLogging {
+class DefaultHttpClient @Inject() (config: Config, lifecycle: Lifecycle) extends HttpClientProvider with LazyLogging {
 
   val SECURITY_PROVIDER_NAME: String = BouncyCastleProvider.PROVIDER_NAME
   Security.addProvider(new BouncyCastleProvider)
 
   override def init(): Unit = {
-    getContext
+    getClientContext
     ()
   }
 
-  private lazy val getContext: SslContext = {
+  private lazy val getClientContext: SslContext = {
     val keystoreType = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_TYPE)
     val keyStorePathAndName = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE)
     val keyStorePassword = config.getString(HttpClientConfPaths.HTTP_SSL_CONTEXT_KEYSTORE_PASSWORD)
@@ -48,28 +48,10 @@ class DefaultSSLHttpClient @Inject() (config: Config, lifecycle: Lifecycle) exte
   }
 
   private final val httpClientConfig: DefaultAsyncHttpClientConfig = new DefaultAsyncHttpClientConfig.Builder()
-    .setSslContext(getContext)
+    .setSslContext(getClientContext)
     .build()
 
   override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend.usingConfig(httpClientConfig)
-
-  lifecycle.addStopHook { () =>
-    Future.successful {
-      logger.info("Shutting down Mutual Http Client")
-      val _ = backend.close()
-    }
-  }
-
-}
-
-trait HttpClientProvider {
-  def backend: SttpBackend[Future, Any]
-}
-
-@Singleton
-class DefaultFutureHttpClient @Inject() (lifecycle: Lifecycle) extends HttpClientProvider with LazyLogging {
-
-  override val backend: SttpBackend[Future, Any] = AsyncHttpClientFutureBackend()
 
   lifecycle.addStopHook { () =>
     Future.successful {

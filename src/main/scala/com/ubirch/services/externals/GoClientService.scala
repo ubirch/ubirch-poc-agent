@@ -26,8 +26,8 @@ trait GoClientService {
 }
 
 class GoClientServiceImpl @Inject() (
-    sttpBackendProvider: HttpClientProvider,
     conf: Config,
+    httpClient: HttpClientProvider,
     @Named("io") scheduler: Scheduler
 )(implicit formats: Formats)
   extends GoClientService {
@@ -52,7 +52,7 @@ class GoClientServiceImpl @Inject() (
 
     def sendRequest(request: UPPSigningRequest) = {
       Task.fromFuture(
-        sttpBackendProvider
+        httpClient
           .backend
           .send(buildRequest(request))
       ).executeOn(scheduler)

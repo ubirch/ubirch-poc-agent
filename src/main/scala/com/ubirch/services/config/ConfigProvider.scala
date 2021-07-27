@@ -10,9 +10,9 @@ import javax.inject._
 @Singleton
 class ConfigProvider extends Provider[Config] {
 
-  val default: Config = ConfigFactory.load()
+  private val default: Config = ConfigFactory.load()
 
-  def conf: Config = default
+  private def conf: Config = default
 
   override def get(): Config = conf
 

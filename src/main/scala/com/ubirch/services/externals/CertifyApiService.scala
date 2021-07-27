@@ -4,7 +4,7 @@ import com.google.inject.name.Named
 import com.typesafe.config.Config
 import com.ubirch.models.requests.CertificationRequest
 import com.ubirch.models.responses.CertifyApiResponse
-import com.ubirch.services.execution.SSLHttpClientProvider
+import com.ubirch.services.execution.HttpClientProvider
 import com.ubirch.{ ConfPaths, HttpResponseException }
 import monix.eval.Task
 import monix.execution.Scheduler
@@ -22,8 +22,8 @@ trait CertifyApiService {
 }
 
 class CertifyApiServiceImpl @Inject() (
-    sttpSSLBackendProvider: SSLHttpClientProvider,
     conf: Config,
+    httpClient: HttpClientProvider,
     @Named("io") scheduler: Scheduler
 )(implicit formats: Formats)
   extends CertifyApiService {
@@ -44,7 +44,7 @@ class CertifyApiServiceImpl @Inject() (
 
     def sendRequest(): Task[CertifyApiResponse] = {
       Task.fromFuture(
-        sttpSSLBackendProvider
+        httpClient
           .backend
           .send(request)
       ).executeOn(scheduler).flatMap(r =>
