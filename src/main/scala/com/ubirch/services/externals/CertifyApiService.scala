@@ -21,7 +21,7 @@ trait CertifyApiService {
   def registerSeal(certificationRequest: CertificationRequest, contentType: MediaType): Task[CertifyApiResponse]
 }
 
-class CertifyApiServiceImpl @Inject() (
+class DefaultCertifyApiService @Inject() (
     conf: Config,
     httpClient: HttpClientProvider,
     @Named("io") scheduler: Scheduler

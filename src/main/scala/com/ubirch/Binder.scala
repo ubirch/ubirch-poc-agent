@@ -7,7 +7,7 @@ import com.typesafe.config.Config
 import com.ubirch.services.certification.{ CertificationService, CertificationServiceImpl }
 import com.ubirch.services.config.ConfigProvider
 import com.ubirch.services.execution._
-import com.ubirch.services.externals.{ CertifyApiService, CertifyApiServiceImpl, GoClientService, GoClientServiceImpl }
+import com.ubirch.services.externals.{ CertifyApiService, DefaultCertifyApiService, GoClientService, DefaultGoClientService }
 import com.ubirch.services.formats.JsonFormatsProvider
 import com.ubirch.services.lifecycle.{ DefaultJVMHook, DefaultLifecycle, JVMHook, Lifecycle }
 import com.ubirch.services.rest.SwaggerProvider
@@ -31,8 +31,8 @@ class Binder extends AbstractModule {
   def Lifecycle: ScopedBindingBuilder = bind(classOf[Lifecycle]).to(classOf[DefaultLifecycle])
   def JVMHook: ScopedBindingBuilder = bind(classOf[JVMHook]).to(classOf[DefaultJVMHook])
   def HttpClientProvider: ScopedBindingBuilder = bind(classOf[HttpClientProvider]).to(classOf[DefaultHttpClient])
-  def CertifyApiService: ScopedBindingBuilder = bind(classOf[CertifyApiService]).to(classOf[CertifyApiServiceImpl])
-  def GoClientService: ScopedBindingBuilder = bind(classOf[GoClientService]).to(classOf[GoClientServiceImpl])
+  def CertifyApiService: ScopedBindingBuilder = bind(classOf[CertifyApiService]).to(classOf[DefaultCertifyApiService])
+  def GoClientService: ScopedBindingBuilder = bind(classOf[GoClientService]).to(classOf[DefaultGoClientService])
   def CertificationService: ScopedBindingBuilder = bind(classOf[CertificationService]).to(classOf[CertificationServiceImpl])
 
   override def configure(): Unit = {

@@ -25,7 +25,7 @@ trait GoClientService {
   def sign(certificationRequest: CertificationRequest, deviceId: UUID, devicePwd: String): Task[SigningResponse]
 }
 
-class GoClientServiceImpl @Inject() (
+class DefaultGoClientService @Inject() (
     conf: Config,
     httpClient: HttpClientProvider,
     @Named("io") scheduler: Scheduler

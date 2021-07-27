@@ -61,3 +61,4 @@ class DefaultHttpClient @Inject() (config: Config, lifecycle: Lifecycle) extends
   }
 
 }
+

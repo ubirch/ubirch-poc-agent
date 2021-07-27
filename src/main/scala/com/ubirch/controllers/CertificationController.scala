@@ -89,7 +89,7 @@ class CertificationController @Inject() (
           deviceId,
           devicePwd
         )
-      } yield Ok(response, Map("X-DGC-ID" -> response.dccID.getOrElse("-")))).onErrorRecover {
+      } yield Ok(response, Map("X-DGC-ID" -> response.dccID.getOrElse("-"), "requestID" -> response.requestID.getOrElse("-")))).onErrorRecover {
         case e: HttpResponseException =>
           logger.error(s"HttpResponseException :: http_code=${e.statusCode} error=${e.message} message=${e.body}")
           ActionResult(e.statusCode, Return.nok(e.body), e.headers.filter { case (k, _) => k == "X-Err" || k == "requestID" })
