@@ -3,11 +3,14 @@
 In order to send a certification request, there is a bill of materials that must be satisfied:
 
 1. [An Ubirch-enabled Client Certificate](#an-ubirch-enabled-client-certificate)
-1. [An Ubirch Thing Identity](#an-ubirch-thing-identity)
+2. [An Ubirch Thing Identity](#an-ubirch-thing-identity)
 
 ## An Ubirch-enabled Client Certificate.
 
-1. Ask the Ubirch team for a proper `pfx file` that contains the client certificates and its private key for your usage. Note that a password should be available as well.
+1. Ask the Ubirch team for a proper `pfx file` that contains the client certificates and its private key for your usage. 
+   
+> Note that a password should be available as well, along with the unique identifier as integrator. This identifier is required when sending data.
+
 2. Put this file in a secure place.
 3. Run `create_key_store_pck12 pfx_file pfx_pass key_store key_store_pass`. 
    
@@ -17,7 +20,7 @@ In order to send a certification request, there is a bill of materials that must
       - `key_store` is the name of the keystore that we are creating for the application. 
       `key_store_pass` is the password for the application keystore. 
 
-   Note: The systems support two kinds of keystores, a `jks` or `pkcs12`. We recommend the latter. However, you can also configure a traditional jks store.
+> Note: The systems support two kinds of keystores, a `jks` or `pkcs12`. We recommend the latter. However, you can also configure a traditional jks store.
 
 4. Store this file in a secure place along with its credentials
 
