@@ -1,6 +1,6 @@
 # Working From Code
 
-In order to get started with the system directly from its sources, you will need:
+In order to get started with the system directly from its sources, you will need to follow the next steps:
 
 1. [Requirements](#requirements)
 2. [Compile PoC Agent](#compile-the-poc-agent)
@@ -13,22 +13,16 @@ In order to get started with the system directly from its sources, you will need
 ## Requirements
 
 - MAVEN 3.8 or greater
-- JDk version "11.x.x"
+- JDK version "11.x.x"
 - Docker
 
 ## Compile the PoC Agent
 
 ```shell
 git clone git@github.com:ubirch/ubirch-poc-agent.git
-```
-
-```shell
 cd ubirch-poc-agent
-```
-
-```shell
 mvn clean compile test
-``` 
+```
 
 ## Set up KeyStore
 
