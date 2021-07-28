@@ -12,7 +12,7 @@ A _upp-dcc certificate_ is a certificate that holds both the dcc and upp informa
 
 In order to get working with the system, we present a description of the API. What its endpoints are and what kind of data is expected or returned. Then we present a description of what is required to send out request in terms of the identity configuration. Finally, we present two options for getting to work with the system; we offer a how-to get around from sources; and another how-to to simply start using the system without compiling or installing toolchains.
 
-1. [Interface Description](./docs/interface_description.md)
-2. [Identity Configuration](./docs/identity_configuration.md)
+1. [Interface Procurement](./docs/interface_description.md)
+2. [Identity Configuration](./docs/identity_procurement.md)
 3. [Working From Code](./docs/working_from_code.md)
 4. [Working From Docker-Compose](./docs/working_from_docker_compose.md)
