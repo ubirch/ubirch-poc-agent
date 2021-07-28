@@ -1,11 +1,60 @@
 #Interface Description
 
-
+1. [Endpoints](#endpoints)
 3. [Example](#example)
 3. [Swagger](#swagger)
 4. [Prometheus](#prometheus-metrics)
 
-## Example
+## Endpoints
+
+### Certification Endpoint
+
+#### Path
+
+| Method | Path |  Description |
+|--------|------|-------------|
+| POST | `/<UUID>` | DCC JSON test data |
+
+Where `<UUID>` is the identifier of an Ubirch identity. 
+
+> [Identity Procurement](./identity_procurement.md)
+
+#### Headers
+
+- `X-Auth-Token`: UBIRCH token related to `<UUID>`
+- `Accept`:
+    * `application/cbor`: By default used when not provided. Gets a base64 encoded cbor object for the dcc certificate.
+    * `application/cbor+base45`: Gets zipped base45 version of the cbor object for the dcc certificate.
+    * `application/pdf`: Gets a base64 encoded pdf for the dcc certificate.
+    
+- `Content-Type`: Optional as application/json.
+
+#### Body
+
+```json
+{
+  "nam": {
+    "fn": "Musterfrau",
+    "gn": "Erika"
+  },
+  "dob": "1979-04-14",
+  "t": [
+    {
+      "id": "103650203",
+      "tg": "840539006",
+      "tt": "LP6464-4",
+      "nm": "Roche LightCycler qPCR",
+      "tr": "260415000",
+      "sc": "2021-04-13T14:20:00+00:00",
+      "dr": "2021-04-13T20:00:01+00:00",
+      "tc": "Hauptbahnhof Köln",
+      "se": "XXXXYYYYZZZZ"
+    }
+  ]
+}
+```
+
+#### Example
 
 ```shell script
 #!/bin/bash
