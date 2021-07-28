@@ -32,6 +32,8 @@ In order to facilitate the process, a deployment-ready folder is provided. This 
 > 
 > - A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
 
+> If you don't have a keystore yet. Check out [Identity Procurement](./identity_procurement.md).
+
 ![Docker Compose Simple](../assets/docker_compose_simple.png)
 
 ```shell
@@ -51,6 +53,8 @@ docker-compose logs -f
 > - A key store password configured in 'deploymentComponent/poc_agent.env'
 >
 > - A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
+
+> If you don't have a keystore yet. Check out [Identity Procurement](./identity_procurement.md).
 
 This configuration allows to have a load balancer in place for the poc-agent system. The instances of the poc-agent system are deployed. The default configuration is round-robin. If you send a request, the logs should show the name of the poc_agent_1 and if you send another one, the poc_agent_2 will be shown instead. This is simple but powerful configuration.
 
