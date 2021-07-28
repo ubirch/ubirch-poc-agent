@@ -23,7 +23,7 @@ There are two flavors:
 
 In order to facilitate the process, a deployment-ready folder is provided. This folder is 'deploymentComponents'
 
-![img_1.png](../assets/docker_compose_structure.png)
+![Docker Compose Structure](../assets/docker_compose_structure.png)
 
 ## Single PoC Agent
 
@@ -43,6 +43,21 @@ docker-compose logs -f
 
 ## Load Balanced PoC Agent
 
+> A key store is expected to be located at: 'deploymentComponent/pocAgent'
+>
+> A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
+
+This configuration allows to have a load balancer in place for the poc-agent system. The instances of the poc-agent system are deployed. The default configuration is round-robin. If you send a request, the logs should show the name of the poc_agent_1 and if you send another one, the poc_agent_2 will be shown instead. This is simple but powerful configuration.
+
+```shell
+docker-compose --f docker-compose-load-balancer.yml up -d
+```
+
+The flag (-d) starts the systems in detached mode. If you have run it with this flag, you can use the following command to see the logs.
+
+```shell
+docker-compose logs -f
+```
 
 ## Verify that it has started
 
