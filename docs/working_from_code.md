@@ -5,7 +5,7 @@ In order to get started with the system directly from its sources, you will need
 1. [Requirements](#requirements)
 2. [Compile PoC Agent](#compile-the-poc-agent)
 3. [Set up keystore](#set-up-keystore)
-4. [Start the UPP Signer](#)
+4. [Start the UPP Signer](#start-the-upp-signer)
 4. [Start the PoC Agent](#start-the-poc-agent)   
 5. [Verify](#verify-that-it-has-started)
 6. [Create a Certificate](#create-a-certificate)
