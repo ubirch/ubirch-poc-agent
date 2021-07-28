@@ -27,9 +27,12 @@ In order to facilitate the process, a deployment-ready folder is provided. This 
 
 ## Single PoC Agent
 
-> A key store is expected to be located at: 'deploymentComponent/pocAgent'
+> - A key store is expected to be located at: 'deploymentComponent/pocAgent'
+> - A key store password configured in 'deploymentComponent/poc_agent.env'
 > 
-> A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
+> - A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
+
+![Docker Compose Simple](../assets/docker_compose_simple.png)
 
 ```shell
 docker-compose --f docker-compose.yml up -d
@@ -43,11 +46,15 @@ docker-compose logs -f
 
 ## Load Balanced PoC Agent
 
-> A key store is expected to be located at: 'deploymentComponent/pocAgent'
+> - A key store is expected to be located at: 'deploymentComponent/pocAgent'
+> 
+> - A key store password configured in 'deploymentComponent/poc_agent.env'
 >
-> A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
+> - A configured config.json for the UPP Signer is expected at 'deploymentComponent/uppClient'
 
 This configuration allows to have a load balancer in place for the poc-agent system. The instances of the poc-agent system are deployed. The default configuration is round-robin. If you send a request, the logs should show the name of the poc_agent_1 and if you send another one, the poc_agent_2 will be shown instead. This is simple but powerful configuration.
+
+![Docker Compose Load Balance](../assets/docker_compose_load_balance.png)
 
 ```shell
 docker-compose --f docker-compose-load-balancer.yml up -d
