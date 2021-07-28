@@ -2,8 +2,8 @@
 
 In order to send a certification request, there is a bill of materials that must be satisfied:
 
-1. An Ubirch-enabled Client Certificate.
-2. An Ubirch Thing Identity
+1. [An Ubirch-enabled Client Certificate](#an-ubirch-enabled-client-certificate)
+1. [An Ubirch Thing Identity](#an-ubirch-thing-identity)
 
 ## An Ubirch-enabled Client Certificate.
 
