@@ -1,16 +1,33 @@
 # Working from Docker Compose
 
 1. [Requirements](#requirements)
-2. [Docker Compose Flavors](#docker-compose-flavors)
-3. [Single PoC Agent](#single-poc-agent)
-4. [Load Balanced PoC Agent](#load-balanced-poc-agent)
-5. [Verify](#verify-that-it-has-started)
-6. [Create a Certificate](#create-a-certificate)
+2. [Docker Images](#docker-images)  
+3. [Docker Compose Flavors](#docker-compose-flavors)
+4. [Single PoC Agent](#single-poc-agent)
+5. [Load Balanced PoC Agent](#load-balanced-poc-agent)
+6. [Verify](#verify-that-it-has-started)
+7. [Create a Certificate](#create-a-certificate)
 
 ## Requirements
 
 - Docker
 - docker-compose
+
+## Docker Images
+
+### Poc Agent
+
+For the ` PoC Agent`, you can create an image by running from the root folder of the project: 
+
+```shell
+mvn clean package -Dbuild.number=<BUILD_NUMBER>
+```
+
+Where <BUILD_NUMBER> is the tag of your image, for example: poc_agent_test.
+
+### UPP Signer
+
+The versions of the UPP Signer greater than v1.2.2 changed the storage mechanism to being a postgresql database. For the current configuration, we recommend the version tag v1.2.2.  
 
 ## Docker Compose Flavors
 
