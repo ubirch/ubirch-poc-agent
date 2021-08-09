@@ -71,7 +71,7 @@ class DefaultGoClientService @Inject() (
               Task.raiseError(HttpResponseException(
                 Symbol("UPP Signer"),
                 "Error processing UPP Signer request",
-                r.code.code,
+                error.statusCode.code,
                 headers,
                 if (tryBody.isSuccess) "Error anchoring upp: " + headers.mkString(", ") else error.body.trim
               ))
