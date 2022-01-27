@@ -1,30 +1,55 @@
 package com.ubirch
 
+import com.ubirch.controllers.CertificationController
+import com.ubirch.services.execution.HttpClientProvider
+import io.prometheus.client.CollectorRegistry
 import monix.eval.Task
 import monix.execution.Scheduler
 import monix.reactive.Observable
+import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
+import org.scalatra.test.scalatest.ScalatraWordSpec
+import sttp.client3.testing.RecordingSttpBackend
+import sttp.client3.{ Request, Response }
+
 import java.util.concurrent.Executors
-
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.must._
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, ExecutionContext, ExecutionContextExecutor, Future }
+import scala.util.Try
 
 /**
   * Represents base for a convenient test
   */
-trait TestBase
-  extends AnyWordSpec
-  with ScalaFutures
-  with BeforeAndAfterEach
-  with BeforeAndAfterAll
-  with Matchers
-  with Awaits
-  with ExecutionContextsTests {
+trait TestBase extends ScalatraWordSpec with ScalaFutures with OptionValues with Awaits with ExecutionContextsTests {
 
+  override def beforeAll(): Unit = {}
+  override def afterAll(): Unit = {}
+
+  def getRecordingBackend(injectorHelper: InjectorHelper): RecordingSttpBackend[Future, Any] = {
+    val stubBackend = injectorHelper.get[HttpClientProvider]
+    stubBackend.backend.asInstanceOf[RecordingSttpBackend[Future, Any]]
+  }
+
+  def getAllSendRequests(injectorHelper: InjectorHelper): List[Request[_, _]] = {
+    getRecordingBackend(injectorHelper).allInteractions.map(_._1)
+  }
+
+  def getAllReceivedResponses(injectorHelper: InjectorHelper): List[Try[Response[_]]] = {
+    getRecordingBackend(injectorHelper).allInteractions.map(_._2)
+  }
+
+  def testEnv[A](stubBackend: StubBackend = new StubResource())(testCode: InjectorHelper => A): A = {
+    try {
+      start()
+      lazy val injector = new InjectorHelperImpl(stubBackend)
+      CollectorRegistry.defaultRegistry.clear()
+      val controller = injector.get[CertificationController]
+      addServlet(controller, "")
+      testCode(injector)
+    } finally {
+      stop()
+    }
+  }
 }
 
 trait ExecutionContextsTests {
