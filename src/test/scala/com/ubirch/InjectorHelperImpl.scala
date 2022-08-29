@@ -47,7 +47,8 @@ class StubResource extends StubBackend {
   def SigningBehavior(backend: Backend): Backend =
     backend.whenRequestMatches(r =>
       r.uri.path.headOption.exists(x => uuidRegex.matches(x)) && r.method == Method.POST && r.uri.toString.contains(
-        DefaultTestHttpClient.GoClientURI))
+        DefaultTestHttpClient.GoClientURI
+      ))
       .thenRespond(SigningBehaviourResponse)
 
   lazy val RegisterSealBehaviourResponse: Response[Either[String, Array[Byte]]] = Response(
@@ -80,7 +81,8 @@ class InjectorHelperImpl(stubBackend: StubBackend)
 
     override def HttpClientProvider: ScopedBindingBuilder = {
       bind(classOf[HttpClientProvider]).toConstructor(
-        classOf[DefaultTestHttpClient].getConstructor(classOf[StubBackend]))
+        classOf[DefaultTestHttpClient].getConstructor(classOf[StubBackend])
+      )
     }
 
     override def configure(): Unit = {
