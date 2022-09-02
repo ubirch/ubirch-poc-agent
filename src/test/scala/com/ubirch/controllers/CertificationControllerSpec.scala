@@ -61,12 +61,13 @@ class CertificationControllerSpec extends TestBase {
       post(
         "/" + device,
         data.getBytes(StandardCharsets.UTF_8),
-        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/pdf")) {
-        assert(status == 200)
-        assert(body == expected)
-        assert(header.get("X-DGC-ID") == Some("URN:UVCI:01DE/103650203/2L1WPYG254NQUOYFMO0XVN#8"))
-        assert(header.get("requestID") == Some("d7fd8547-3b55-4bfb-bedb-9f62beff02f0"))
-      }
+        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/pdf")
+      ) {
+          assert(status == 200)
+          assert(body == expected)
+          assert(header.get("X-DGC-ID") == Some("URN:UVCI:01DE/103650203/2L1WPYG254NQUOYFMO0XVN#8"))
+          assert(header.get("requestID") == Some("d7fd8547-3b55-4bfb-bedb-9f62beff02f0"))
+        }
 
       val recordingBackend = getAllSendRequests(injector)
       val certifyRequest = recordingBackend.find(_.uri.toString().contains(DefaultTestHttpClient.CertifyURI)).value
@@ -82,12 +83,13 @@ class CertificationControllerSpec extends TestBase {
       post(
         "/" + device,
         data.getBytes(StandardCharsets.UTF_8),
-        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")) {
-        assert(status == 200)
-        assert(body == expected)
-        assert(header.get("X-DGC-ID") == Some("URN:UVCI:01DE/103650203/2L1WPYG254NQUOYFMO0XVN#8"))
-        assert(header.get("requestID") == Some("d7fd8547-3b55-4bfb-bedb-9f62beff02f0"))
-      }
+        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")
+      ) {
+          assert(status == 200)
+          assert(body == expected)
+          assert(header.get("X-DGC-ID") == Some("URN:UVCI:01DE/103650203/2L1WPYG254NQUOYFMO0XVN#8"))
+          assert(header.get("requestID") == Some("d7fd8547-3b55-4bfb-bedb-9f62beff02f0"))
+        }
 
       val recordingBackend = getAllSendRequests(injector)
       val certifyRequest = recordingBackend.find(_.uri.toString().contains(DefaultTestHttpClient.CertifyURI)).value
@@ -106,12 +108,13 @@ class CertificationControllerSpec extends TestBase {
       post(
         "/" + device,
         data.getBytes(StandardCharsets.UTF_8),
-        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")) {
-        assert(status == 400)
-        assert(body == expected)
-        assert(header.get("X-DGC-ID") == None)
-        assert(header.get("requestID") == None)
-      }
+        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")
+      ) {
+          assert(status == 400)
+          assert(body == expected)
+          assert(header.get("X-DGC-ID") == None)
+          assert(header.get("requestID") == None)
+        }
 
       val recordingBackend = getAllSendRequests(injector)
       val certifyRequest = recordingBackend.find(_.uri.toString().contains(DefaultTestHttpClient.CertifyURI)).value
@@ -133,12 +136,13 @@ class CertificationControllerSpec extends TestBase {
       post(
         "/" + device,
         data.getBytes(StandardCharsets.UTF_8),
-        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")) {
-        assert(status == 500)
-        assert(body == expected)
-        assert(header.get("X-DGC-ID") == None)
-        assert(header.get("requestID") == None)
-      }
+        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")
+      ) {
+          assert(status == 500)
+          assert(body == expected)
+          assert(header.get("X-DGC-ID") == None)
+          assert(header.get("requestID") == None)
+        }
 
       getAllSendRequests(injector) should have size 2
     }
@@ -155,13 +159,14 @@ class CertificationControllerSpec extends TestBase {
       post(
         "/" + device,
         data.getBytes(StandardCharsets.UTF_8),
-        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")) {
-        assert(status == 500)
-        assert(body == expected)
-        assert(header.get("X-DGC-ID") == None)
-        assert(header.get("requestID") == Some("1234567890"))
-        assert(header.get("X-Err") == Some("12"))
-      }
+        Map("X-Auth-Token" -> UUID.randomUUID().toString, "Accept" -> "application/xml")
+      ) {
+          assert(status == 500)
+          assert(body == expected)
+          assert(header.get("X-DGC-ID") == None)
+          assert(header.get("requestID") == Some("1234567890"))
+          assert(header.get("X-Err") == Some("12"))
+        }
 
       getAllSendRequests(injector) should have size 2
     }
